@@ -13,7 +13,7 @@ from typing import ClassVar, Dict, Tuple, Pattern, List, Optional, Any
 import sys
 sys.path.append(".")
 
-from dd_sigma.pipelines.datadog.datadog import datadog_pipeline
+from dd_sigma.pipelines.datadog.datadog import datadog_aws_pipeline
 
 class DatadogBackend(TextQueryBackend):
     """Generates a query based on syntax here # https://docs.datadoghq.com/tracing/trace_explorer/query_syntax/"""
@@ -22,8 +22,7 @@ class DatadogBackend(TextQueryBackend):
         "default": "Datadog query syntax"
     }
     requires_pipeline : bool = True
-    backend_processing_pipeline : ClassVar[ProcessingPipeline] = datadog_pipeline()
-    # Operator precedence: tuple of Condition{AND,OR,NOT} in order of precedence.
+    backend_processing_pipeline : ClassVar[ProcessingPipeline] = datadog_aws_pipeline()
     # The backend generates grouping if required
     precedence : ClassVar[Tuple[ConditionItem, ConditionItem, ConditionItem]] = (ConditionNOT, ConditionAND, ConditionOR)
     group_expression : ClassVar[str] = "({expr})"   # Expression for precedence override grouping as format string with {expr} placeholder
@@ -47,12 +46,14 @@ class DatadogBackend(TextQueryBackend):
     field_escape_quote : ClassVar[bool] = True        # Escape quote string defined in field_quote
     field_escape_pattern : ClassVar[Pattern] = re.compile("\\s")   # All matches of this pattern are prepended with the string contained in field_escape.
 
+
+
     ## Values
     str_quote       : ClassVar[str] = ''      # string quoting character (added as escaping character)
     escape_char     : ClassVar[str] = "\\"    # Escaping character for special characters inside string
     wildcard_multi  : ClassVar[str] = "*"     # Character used as multi-character wildcard
     wildcard_single : ClassVar[str] = "*"     # Character used as single-character wildcard
-    add_escaped     : ClassVar[str] = "\\"    # Characters quoted in addition to wildcards and string quote
+    add_escaped     : ClassVar[str] = ' + - = && || > < ! ( ) { } [ ] ^ “ ” ~ * ? : " '    # Characters quoted in addition to wildcards and string quote
     filter_chars    : ClassVar[str] = ""      # Characters filtered
     bool_values     : ClassVar[Dict[bool, str]] = {   # Values to which boolean values are mapped.
         True: "true",
@@ -60,29 +61,15 @@ class DatadogBackend(TextQueryBackend):
     }
 
     # # String matching operators. if none is appropriate eq_token is used.
-    startswith_expression : ClassVar[str] = "@{field} * {value}"
+    startswith_expression : ClassVar[str] = "{field}:{value}*"
     # endswith_expression   : ClassVar[str] = "{field} endswith {value}"
     contains_expression   : ClassVar[str] = "@{field} contains {value}"
     # wildcard_match_expression : ClassVar[str] = "{field} match {value}"      # Special expression if wildcards can't be matched with the eq_token operator
 
-    # Regular expressions
-    # Regular expression query as format string with placeholders {field}, {regex}, {flag_x} where x
-    # is one of the flags shortcuts supported by Sigma (currently i, m and s) and refers to the
-    # token stored in the class variable re_flags.
-    re_expression : ClassVar[str] = "@{field}:/{regex}/"
-    re_escape_char : ClassVar[str] = "\\"               # Character used for escaping in regular expressions
-    re_escape : ClassVar[Tuple[str]] = ("")               # List of strings that are escaped
-    re_escape_escape_char : bool = False                 # TODO If True, the escape character is also escaped
-    re_flag_prefix : bool = True                        # TODO If True, the flags are prepended as (?x) group at the beginning of the regular expression, e.g. (?i). If this is not supported by the target, it should be set to False.
-    # Mapping from SigmaRegularExpressionFlag values to static string templates that are used in
-    # flag_x placeholders in re_expression template.
-    # By default, i, m and s are defined. If a flag is not supported by the target query language,
-    # remove it from re_flags or don't define it to ensure proper error handling in case of appearance.
-    re_flags : Dict[SigmaRegularExpressionFlag, str] = {
-        SigmaRegularExpressionFlag.IGNORECASE: "i",
-        SigmaRegularExpressionFlag.MULTILINE : "m",
-        SigmaRegularExpressionFlag.DOTALL    : "s",
-    }
+    # Datadog currently does not support regular expressions
+    re_escape_escape_char : bool = False
+    re_flag_prefix : bool = False
+
 
     # Case sensitive string matching expression. String is quoted/escaped like a normal string.
     # Placeholders {field} and {value} are replaced with field name and quoted/escaped string.
@@ -115,7 +102,7 @@ class DatadogBackend(TextQueryBackend):
     field_not_exists_expression : ClassVar[str] = "notexists({field})"      # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
 
     # Field value in list, e.g. "field in (value list)" or "field containsall (value list)"
-    convert_or_as_in : ClassVar[bool] = True                     # Convert OR as in-expression
+    # convert_or_as_in : ClassVar[bool] = True                     # Convert OR as in-expression
     convert_and_as_in : ClassVar[bool] = True                    # Convert AND as in-expression
     in_expressions_allow_wildcards : ClassVar[bool] = True       # Values in list can contain wildcards. If set to False (default) only plain values are converted into in-expressions.
     field_in_list_expression : ClassVar[str] = "{field} {op} ({list})"  # Expression for field in list of values as format string with placeholders {field}, {op} and {list}
