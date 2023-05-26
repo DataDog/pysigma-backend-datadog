@@ -62,8 +62,8 @@ class DatadogBackend(TextQueryBackend):
 
     # # String matching operators. if none is appropriate eq_token is used.
     startswith_expression : ClassVar[str] = "{field}:{value}*"
-    # endswith_expression   : ClassVar[str] = "{field} endswith {value}"
-    contains_expression   : ClassVar[str] = "@{field} contains {value}"
+    endswith_expression   : ClassVar[str] = "{field}:*{value}"
+    contains_expression   : ClassVar[str] = "{field}:*{value}*"
     # wildcard_match_expression : ClassVar[str] = "{field} match {value}"      # Special expression if wildcards can't be matched with the eq_token operator
 
     # Datadog currently does not support regular expressions
@@ -78,7 +78,7 @@ class DatadogBackend(TextQueryBackend):
     # case_sensitive_match_expression is used.
     # case_sensitive_startswith_expression : ClassVar[str] = "{field} casematch_startswith {value}"
     # case_sensitive_endswith_expression   : ClassVar[str] = "{field} casematch_endswith {value}"
-    # case_sensitive_contains_expression   : ClassVar[str] = "{field} casematch_contains {value}"
+    # case_sensitive_contains_expression   : ClassVar[str] = "{field}:*{value}*"
 
     # Numeric comparison operators
     compare_op_expression : ClassVar[str] = "{field}{operator}{value}"  # Compare operation query as format string with placeholders {field}, {operator} and {value}
@@ -125,11 +125,49 @@ class DatadogBackend(TextQueryBackend):
 
 
 
-    def finalize_query_format1(self, rule: SigmaRule, query: str, index: int, state: ConversionState) -> Any:
-        # TODO: implement the per-query output for the output format format1 here. Usually, the generated query is
-        # embedded into a template, e.g. a JSON format with additional information from the Sigma rule.
-        # TODO: proper type annotation.
-        return query
+
+    def finalize_cloud_siem_default_rule(self, rule: SigmaRule, query: str, index: int, state: ConversionState) -> Dict:
+        """
+        Generation of Datadog Cloud SIEM Detection Rules.
+
+        For more details on Cloud SIEM Detection rules, see:
+        https://docs.datadoghq.com/security/cloud_siem/log_detection_rules?tab=threshold
+        For best practices for writing Datadog security rules see:
+        https://www.datadoghq.com/blog/writing-datadog-security-detection-rules/
+        """
+        siem_rule = {
+            "product": ["security_monitoring"],
+            "name": f"SIGMA Threshold Detection - {rule.title}",
+            "defaultRuleId": str(rule.id),
+            "tags": [f"{n.namespace}-{n.name}" for n in rule.tags],
+            "isEnabled": True,
+            "isStaged": True,
+            "isMapperMetricsOnly": True,
+            "queries": [
+                {
+                    "name": "",
+                    "query": query,
+                    "groupByFields": [],
+                    "distinctFields": [],
+                    "aggregation": ""
+                }
+            ],
+            "options": {
+                "detectionMethod": "threshold",
+                "evaluationWindow": 300,
+                "keepAlive": 3600,
+                "maxSignalDuration": 7200
+            },
+            "cases": [
+                {
+                    "condition": "",
+                    "name": "",
+                    "status": str(rule.level.name).lower() if rule.level is not None else "low",
+                    "notifications": []
+                }
+            ],
+        }
+        return siem_rule
 
     def finalize_output_format1(self, queries: List[str]) -> Any:
         # TODO: implement the output finalization for all generated queries for the format format1 here. Usually,

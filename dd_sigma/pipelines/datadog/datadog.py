@@ -9,7 +9,6 @@ from sigma.rule import SigmaRule
 # See https://sigmahq-pysigma.readthedocs.io/en/latest/Processing_Pipelines.html for further documentation.
 
 class AggregateRuleProcessingCondition(RuleProcessingCondition):
-    """"""
     def match(self, pipeline : "sigma.processing.pipeline.ProcessingPipeline", rule : SigmaRule) -> bool:
         """Match condition on Sigma rule."""
         agg_function_strings = ["| count", "| min", "| max", "| avg", "| sum", "| near"]
@@ -18,6 +17,7 @@ class AggregateRuleProcessingCondition(RuleProcessingCondition):
             return True
         else:
             return False
+
 
 
 class DatadogFieldMappingTransformation(FieldMappingTransformation):
@@ -42,17 +42,15 @@ def datadog_aws_pipeline() -> ProcessingPipeline:        # Processing pipelines 
             )
 
         ] + [
-            ProcessingItem(     # Field mappings
+            ProcessingItem(
                 identifier="dd_aws_field_mapping",
                 transformation=DatadogFieldMappingTransformation({
-                    # overrides go here, otherwise fields are mapped to "@{field}"
+                    # Field Mapping overrides go here, otherwise fields are mapped to "@{field} to accommodate DD queries"
                     "requestParameters": "requestParameters.attribute",
-
-                    # "source": f"{get_service_name('logsource.service')}",
                 })
             ),
             ProcessingItem(
-                identifier="dd_test_fails_rule_type_not_supported",
+                identifier="dd_fails_rule_type_not_supported",
                 rule_condition_linking=any,
                 transformation=RuleFailureTransformation("Conversion for rule type not yet suppported by the Datadog Backend."),
                 rule_condition_negation=True,
@@ -61,7 +59,7 @@ def datadog_aws_pipeline() -> ProcessingPipeline:        # Processing pipelines 
                 ],
             ),
             ProcessingItem(
-                identifier="datadog_test_fails_rule_conditions_not_supported",
+                identifier="datadog_fails_rule_conditions_not_supported",
                 transformation=RuleFailureTransformation("The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near."),
                 rule_conditions=[
                     AggregateRuleProcessingCondition()

@@ -45,22 +45,6 @@ def test_datadog_multiple_evt_names():
             """)
         ) == ['@eventSource:s3.amazonaws.com (@eventName:PutBucketLogging OR @eventName:PutBucketWebsite OR @eventName:PutEncryptionConfiguration)']
 
-def test_datadog_wildcard():
-    assert DatadogBackend().convert(
-        SigmaCollection.from_yaml("""
-                title: Multiple Event Names
-                status: test
-                logsource:
-                    product: aws
-                    service: cloudtrail
-                detection:
-                    sel:
-                        eventSource: lambda.amazonaws.com
-                        eventName|startswith: 'UpdateFunctionConfiguration'
-                    condition: sel
-            """)
-    ) == ['@eventSource:lambda.amazonaws.com @eventName:UpdateFunctionConfiguration*']
-
 
 def test_datadog_unsupported_rule_type():
     with pytest.raises(SigmaTransformationError, match="Conversion for rule type not yet suppported by the Datadog Backend."):

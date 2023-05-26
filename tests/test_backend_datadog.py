@@ -5,119 +5,116 @@ from sigma.collection import SigmaCollection
 import sys
 sys.path.append(".")
 
+from dd_sigma.backends.datadog import DatadogBackend
+
+
 @pytest.mark.smoke
 def test_always_passes():
     assert True
 
-# @pytest.mark.smoke
-# def test_always_fails():
-#     assert False
 
-from dd_sigma.backends.datadog import DatadogBackend
+@pytest.fixture
+def datadog_backend():
+    return DatadogBackend()
 #
-# @pytest.fixture
-# def datadog_backend():
-#     return DatadogBackend()
+def test_datadog_and_expression(datadog_backend : DatadogBackend):
+    assert datadog_backend.convert(
+        SigmaCollection.from_yaml("""
+            title: Test
+            status: test
+            logsource:
+                service: cloudtrail
+                product: aws
+            detection:
+                sel:
+                    fieldA: valueA
+                    fieldB: valueB
+                condition: sel
+        """)
+    ) == ['@fieldA:valueA @fieldB:valueB']
 #
-# # TODO: implement tests for some basic queries and their expected results.
-# def test_datadog_and_expression(datadog_backend : DatadogBackend):
-#     assert datadog_backend.convert(
-#         SigmaCollection.from_yaml("""
-#             title: Test
-#             status: test
-#             logsource:
-#                 category: test_category
-#                 product: test_product
-#             detection:
-#                 sel:
-#                     fieldA: valueA
-#                     fieldB: valueB
-#                 condition: sel
-#         """)
-#     ) == ['<insert expected result here>']
+def test_datadog_or_expression(datadog_backend : DatadogBackend):
+    assert datadog_backend.convert(
+        SigmaCollection.from_yaml("""
+            title: Test
+            status: test
+            logsource:
+                service: cloudtrail
+                product: aws
+            detection:
+                sel1:
+                    fieldA: valueA
+                sel2:
+                    fieldB: valueB
+                condition: 1 of sel*
+        """)
+    ) == ['@fieldA:valueA OR @fieldB:valueB']
 #
-# def test_datadog_or_expression(datadog_backend : DatadogBackend):
-#     assert datadog_backend.convert(
-#         SigmaCollection.from_yaml("""
-#             title: Test
-#             status: test
-#             logsource:
-#                 category: test_category
-#                 product: test_product
-#             detection:
-#                 sel1:
-#                     fieldA: valueA
-#                 sel2:
-#                     fieldB: valueB
-#                 condition: 1 of sel*
-#         """)
-#     ) == ['<insert expected result here>']
+def test_datadog_and_or_expression(datadog_backend : DatadogBackend):
+    assert datadog_backend.convert(
+        SigmaCollection.from_yaml("""
+            title: Test
+            status: test
+            logsource:
+                service: cloudtrail
+                product: aws
+            detection:
+                sel:
+                    fieldA:
+                        - valueA1
+                        - valueA2
+                    fieldB:
+                        - valueB1
+                        - valueB2
+                condition: sel
+        """)
+    ) == ['(@fieldA:valueA1 OR @fieldA:valueA2) (@fieldB:valueB1 OR @fieldB:valueB2)']
 #
-# def test_datadog_and_or_expression(datadog_backend : DatadogBackend):
-#     assert datadog_backend.convert(
-#         SigmaCollection.from_yaml("""
-#             title: Test
-#             status: test
-#             logsource:
-#                 category: test_category
-#                 product: test_product
-#             detection:
-#                 sel:
-#                     fieldA:
-#                         - valueA1
-#                         - valueA2
-#                     fieldB:
-#                         - valueB1
-#                         - valueB2
-#                 condition: sel
-#         """)
-#     ) == ['<insert expected result here>']
+def test_datadog_or_and_expression(datadog_backend : DatadogBackend):
+    assert datadog_backend.convert(
+        SigmaCollection.from_yaml("""
+            title: Test
+            status: test
+            logsource:
+                service: cloudtrail
+                product: aws
+            detection:
+                sel1:
+                    fieldA: valueA1
+                    fieldB: valueB1
+                sel2:
+                    fieldA: valueA2
+                    fieldB: valueB2
+                condition: 1 of sel*
+        """)
+    ) == ['@fieldA:valueA1 @fieldB:valueB1 OR @fieldA:valueA2 @fieldB:valueB2']
 #
-# def test_datadog_or_and_expression(datadog_backend : DatadogBackend):
-#     assert datadog_backend.convert(
-#         SigmaCollection.from_yaml("""
-#             title: Test
-#             status: test
-#             logsource:
-#                 category: test_category
-#                 product: test_product
-#             detection:
-#                 sel1:
-#                     fieldA: valueA1
-#                     fieldB: valueB1
-#                 sel2:
-#                     fieldA: valueA2
-#                     fieldB: valueB2
-#                 condition: 1 of sel*
-#         """)
-#     ) == ['<insert expected result here>']
-#
-# def test_datadog_in_expression(datadog_backend : DatadogBackend):
-#     assert datadog_backend.convert(
-#         SigmaCollection.from_yaml("""
-#             title: Test
-#             status: test
-#             logsource:
-#                 category: test_category
-#                 product: test_product
-#             detection:
-#                 sel:
-#                     fieldA:
-#                         - valueA
-#                         - valueB
-#                         - valueC*
-#                 condition: sel
-#         """)
-#     ) == ['<insert expected result here>']
-#
+def test_datadog_in_expression(datadog_backend : DatadogBackend):
+    assert datadog_backend.convert(
+        SigmaCollection.from_yaml("""
+            title: Test
+            status: test
+            logsource:
+                service: cloudtrail
+                product: aws
+            detection:
+                sel:
+                    fieldA:
+                        - valueA
+                        - valueB
+                        - valueC*
+                condition: sel
+        """)
+    ) ==  ['@fieldA:valueA OR @fieldA:valueB OR @fieldA:valueC*']
+
 # def test_datadog_regex_query(datadog_backend : DatadogBackend):
 #     assert datadog_backend.convert(
 #         SigmaCollection.from_yaml("""
 #             title: Test
 #             status: test
 #             logsource:
-#                 category: test_category
-#                 product: test_product
+#                 service: cloudtrail
+#                 product: aws
 #             detection:
 #                 sel:
 #                     fieldA|re: foo.*bar
@@ -147,15 +144,15 @@ from dd_sigma.backends.datadog import DatadogBackend
 #             title: Test
 #             status: test
 #             logsource:
-#                 category: test_category
-#                 product: test_product
+#                 service: cloudtrail
+#                 product: aws
 #             detection:
 #                 sel:
 #                     field name: value
 #                 condition: sel
 #         """)
 #     ) == ['<insert expected result here>']
-#
+# #
 # # TODO: implement tests for all backend features that don't belong to the base class defaults, e.g. features that were
 # # implemented with custom code, deferred expressions etc.
 #
