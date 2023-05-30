@@ -10,7 +10,6 @@ from dd_sigma.backends.datadog.datadog_backend import UnsupportedSyntax
 sys.path.append(".")
 
 from dd_sigma.backends.datadog import DatadogBackend
-from dd_sigma.pipelines.datadog import datadog_aws_pipeline
 
 def test_datadog_pipeline_aws_simple():
     assert DatadogBackend().convert(
@@ -84,16 +83,15 @@ def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
         )
 
 
-
 def test_datadog_pipeline_multiple_filters():
     assert DatadogBackend().convert(
         SigmaCollection.from_yaml("""
-            title: Basic Sigma Rule Test for AWS
+            title: Test Filters
             status: test
             logsource:
                 product: aws
                 service: cloudtrail
-           detection:
+            detection:
                 selection:
                     eventName: 'CreateInstanceExportTask'
                     eventSource: 'ec2.amazonaws.com'
@@ -105,8 +103,7 @@ def test_datadog_pipeline_multiple_filters():
                     responseElements|contains: 'Failure'
                 condition: selection and not 1 of filter*
         """)
-    ) == ['@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND @filter1:errorMessage\\|contains AND @filter2:errorCode\\|contains AND @filter3:responseElements\
-\|contains AND - ()']
+    ) == ['@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND - (@errorMessage:* OR @errorCode:* OR @responseElements:*Failure*)']
 
 def test_datadog_pipeline_unsupported_regex():
     with pytest.raises(UnsupportedSyntax):

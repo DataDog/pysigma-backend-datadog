@@ -21,16 +21,6 @@ class AggregateRuleProcessingCondition(RuleProcessingCondition):
         else:
             return False
 
-class RegExUnsupportedProcessingCondition(RuleProcessingCondition):
-    def match(self, pipeline : "sigma.processing.pipeline.ProcessingPipeline", rule : SigmaRule) -> bool:
-        """Match condition on Sigma rule."""
-        reg_ex_matcher_strings = ["| re", "|re"]
-        condition_string = " ".join([field.lower() for field in rule.detection.condition])
-        if any(f in condition_string for f in reg_ex_matcher_strings):
-            return True
-        else:
-            return False
-
 class DatadogFieldMappingTransformation(FieldMappingTransformation):
     def get_mapping(self, field):
         mapping = self.mapping.get(field)
@@ -74,13 +64,6 @@ def datadog_aws_pipeline() -> ProcessingPipeline:        # Processing pipelines 
                 transformation=RuleFailureTransformation("The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near."),
                 rule_conditions=[
                     AggregateRuleProcessingCondition()
-                ],
-            ),
-            ProcessingItem(
-                identifier="dd_fails_regex_not_supported",
-                transformation=RuleFailureTransformation("The Datadog backend currently doesn't support regex expressions."),
-                rule_conditions=[
-                    RegExUnsupportedProcessingCondition()
                 ],
             ),
         ]

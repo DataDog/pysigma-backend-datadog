@@ -38,12 +38,6 @@ class DatadogBackend(TextQueryBackend):
     not_token : ClassVar[str] = "-"
     eq_token : ClassVar[str] = ":"  # Token inserted between field and value (without separator)
 
-    # String output
-    # ## Fields
-    # ### Quoting
-    # field_quote : ClassVar[str] = "'"                               # Character used to quote field characters if field_quote_pattern matches (or not, depending on field_quote_pattern_negation). No field name quoting is done if not set.
-    # field_quote_pattern : ClassVar[Pattern] = re.compile("^\\w+$")   # Quote field names if this pattern (doesn't) matches, depending on field_quote_pattern_negation. Field name is always quoted if pattern is not set.
-    # field_quote_pattern_negation : ClassVar[bool] = True            # Negate field_quote_pattern result. Field name is quoted if pattern doesn't matches if set to True (default).
 
     ### Escaping
     field_escape : ClassVar[str] = "\\"               # Character to escape particular parts defined in field_escape_pattern.
@@ -83,29 +77,18 @@ class DatadogBackend(TextQueryBackend):
     field_equals_field_expression : ClassVar[Optional[str]] = None  # Field comparison expression with the placeholders {field1} and {field2} corresponding to left field and right value side of Sigma detection item
     field_equals_field_escaping_quoting : Tuple[bool, bool] = (True, True)   # If regular field-escaping/quoting is applied to field1 and field2. A custom escaping/quoting can be implemented in the convert_condition_field_eq_field_escape_and_quote method.
 
-    # Null/None expressions
-    # field_null_expression : ClassVar[str] = "NOT {field}"          # Expression for field has null value as format string with {field} placeholder for field name
-
     # Field existence condition expressions.
     field_exists_expression : ClassVar[str] = "({field})"             # Expression for field existence as format string with {field} placeholder for field name
     field_not_exists_expression : ClassVar[str] = "NOT ({field})"      # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
 
     # Field value in list, e.g. "field in (value list)" or "field contains all (value list)"
-    # convert_or_as_in : ClassVar[bool] = True
     # Convert OR as in-expression
-    # re_expression: bool = False
     convert_and_as_in : ClassVar[bool] = False                    # Convert AND as in-expression
     in_expressions_allow_wildcards : ClassVar[bool] = True       # Values in list can contain wildcards. If set to False (default) only plain values are converted into in-expressions.
     field_in_list_expression : ClassVar[str] = "{field} {op} ({list})"  # Expression for field in list of values as format string with placeholders {field}, {op} and {list}
     or_in_operator : ClassVar[str] = ":"               # Operator used to convert OR into in-expressions. Must be set if convert_or_as_in is set
     # and_in_operator : ClassVar[str] = "contains-all"    # Operator used to convert AND into in-expressions. Must be set if convert_and_as_in is set
     list_separator : ClassVar[str] = "OR "               # List element separator
-
-    # Datadog does not support regular expressions
-    re_expression: ClassVar[bool] = False
-    re_escape_char: ClassVar[bool] = False
-    re_escape: ClassVar[Tuple[bool]] = (False, )
-    re_escape_escape_char: ClassVar[bool] = False
 
     # Value not bound to a field
     unbound_value_str_expression : ClassVar[str] = '"{value}"'   # Expression for string value not bound to a field as format string with placeholder {value}
@@ -114,13 +97,13 @@ class DatadogBackend(TextQueryBackend):
 
     def convert_condition_field_eq_val_re(self, cond: SigmaRegularExpression, state : Any) -> None:
         """
-        This function uncoditionally raises an exception because Datadog's rule syntax does not support
+        This function unconditionally raises an exception because Datadog's rule syntax does not support
         full regular expressions.
         In the future we can convert to the supported glob syntax in some cases.
         """
         raise UnsupportedSyntax("Regular expressions are not currently supported in Datadog's rule query format")
 
-    def finalize_cloud_siem_rule(self, rule: SigmaRule, query: str) -> Dict:
+    def finalize_query_siem_rule(self, rule: SigmaRule, query: str,  index: int, state: ConversionState) -> Dict:
         """
         Generation of Datadog Cloud SIEM Detection Rules.
 
@@ -132,11 +115,9 @@ class DatadogBackend(TextQueryBackend):
         siem_rule = {
             "product": ["security_monitoring"],
             "name": f"SIGMA Threshold Detection - {rule.title}",
-            "defaultRuleId": str(rule.id),
+            "ruleId": str(rule.id),
             "tags": [f"{n.namespace}-{n.name}" for n in rule.tags],
-            "isEnabled": True,
-            "isStaged": True,
-            "isMapperMetricsOnly": True,
+            "source": f"{rule.logsource}",
             "queries": [
                 {
                     "name": "",
@@ -165,4 +146,3 @@ class DatadogBackend(TextQueryBackend):
 
     def finalize_output_siem_rule(self, queries: List[Dict]) -> Dict:
         return list(queries)
-
