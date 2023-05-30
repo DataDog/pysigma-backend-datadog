@@ -5,5 +5,5 @@
 cov.xml
 dist/
 docs/_build
-.venv
-.pysigma-venv
+.venv/
+.pysigma-venv/
