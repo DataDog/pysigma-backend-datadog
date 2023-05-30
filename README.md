@@ -4,17 +4,14 @@
 
 # pySigma datadog Backend
 
-This is the datadog backend for pySigma. It provides the package `sigma.backends.datadog` with the `datadogBackend` class.
+This repository contains the Datadog backend for pySigma which provides the package `sigma.backends.datadog` with the `datadogBackend` class.
 Further, it contains the following processing pipelines in `sigma.pipelines.datadog`:
 
-* pipeline1: purpose
-* pipeline2: purpose
+* datadog_pipeline: Contains Conversion Logic from Generic Log Source to Datadog Query Syntax, maps fields, and informs users of unsupported rule conditions
 
 It supports the following output formats:
 
 * default: plain datadog queries
-* format_1: purpose
-* format_2: purpose
 
 This backend is currently maintained by:
 
