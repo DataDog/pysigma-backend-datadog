@@ -5,22 +5,23 @@ from sigma.conversion.base import TextQueryBackend
 
 from sigma.processing.pipeline import ProcessingPipeline
 from sigma.conditions import ConditionItem, ConditionAND, ConditionOR, ConditionNOT
-from sigma.types import SigmaCompareExpression, SigmaRegularExpression, SigmaRegularExpressionFlag
+from sigma.types import SigmaCompareExpression, SigmaRegularExpression
 
 import re
 from typing import ClassVar, Dict, Tuple, Pattern, List, Optional, Any
 
+# Todo: Remove once Datadog Pipeline is published
 import sys
 sys.path.append(".")
 
 from dd_sigma.pipelines.datadog.datadog import datadog_aws_pipeline
 
-
+# Empty class for unsupported syntax like RegEx which raises an exception
 class UnsupportedSyntax(Exception):
     ...
 
 class DatadogBackend(TextQueryBackend):
-    """Generates a query based on syntax here # https://docs.datadoghq.com/logs/explorer/search_syntax/"""
+    """Generates a Datdog query using Datadog Query Syntax here:  https://docs.datadoghq.com/logs/explorer/search_syntax/"""
     name: ClassVar[str] = "Datadog Backend"
     formats: Dict[str, str] = {
         "default": "Datadog query syntax"
@@ -34,7 +35,7 @@ class DatadogBackend(TextQueryBackend):
     # Generated query tokens
     token_separator : str = " "     # separator inserted between all boolean operators
     or_token : ClassVar[str] = "OR"
-    and_token : ClassVar[str] = "AND"  # Datadog Queries don't use AND between facets, so we're leaving this blank
+    and_token : ClassVar[str] = "AND"
     not_token : ClassVar[str] = "-"
     eq_token : ClassVar[str] = ":"  # Token inserted between field and value (without separator)
 
@@ -79,7 +80,7 @@ class DatadogBackend(TextQueryBackend):
 
     # Field existence condition expressions.
     field_exists_expression : ClassVar[str] = "({field})"             # Expression for field existence as format string with {field} placeholder for field name
-    field_not_exists_expression : ClassVar[str] = "NOT ({field})"      # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
+    field_not_exists_expression : ClassVar[str] = "- ({field})"      # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
 
     # Field value in list, e.g. "field in (value list)" or "field contains all (value list)"
     # Convert OR as in-expression

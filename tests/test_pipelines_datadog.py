@@ -1,15 +1,15 @@
+# pylint: disable=too-many-lines
 import pytest
 from sigma.collection import SigmaCollection
 from sigma.exceptions import SigmaTransformationError
-# from sigma.backends.datadog import DatadogBackend
-
-import sys
 
 from dd_sigma.backends.datadog.datadog_backend import UnsupportedSyntax
 
+# TODO: Remove once Datadog Backend is published in PySigma
+import sys
 sys.path.append(".")
-
 from dd_sigma.backends.datadog import DatadogBackend
+# from sigma.backends.datadog import DatadogBackend TODO: Reenable this line once our backend is published
 
 def test_datadog_pipeline_aws_simple():
     assert DatadogBackend().convert(
