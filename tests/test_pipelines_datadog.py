@@ -4,6 +4,9 @@ from sigma.exceptions import SigmaTransformationError
 # from sigma.backends.datadog import DatadogBackend
 
 import sys
+
+from dd_sigma.backends.datadog.datadog_backend import UnsupportedSyntax
+
 sys.path.append(".")
 
 from dd_sigma.backends.datadog import DatadogBackend
@@ -23,7 +26,7 @@ def test_datadog_pipeline_aws_simple():
                     eventName: 'LookupEvents'
                 condition: sel
         """)
-    ) == ['@eventSource:cloudtrail.amazonaws.com @eventName:LookupEvents']
+    ) == ['@eventSource:cloudtrail.amazonaws.com AND @eventName:LookupEvents']
 
 
 def test_datadog_multiple_evt_names():
@@ -43,7 +46,7 @@ def test_datadog_multiple_evt_names():
                             - 'PutEncryptionConfiguration'
                     condition: sel
             """)
-        ) == ['@eventSource:s3.amazonaws.com (@eventName:PutBucketLogging OR @eventName:PutBucketWebsite OR @eventName:PutEncryptionConfiguration)']
+        ) == ['@eventSource:s3.amazonaws.com AND (@eventName:PutBucketLogging OR @eventName:PutBucketWebsite OR @eventName:PutEncryptionConfiguration)']
 
 
 def test_datadog_unsupported_rule_type():
@@ -77,5 +80,47 @@ def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
                     sel:
                         field: maroon
                     condition: sel | max() = 10
+            """)
+        )
+
+
+
+def test_datadog_pipeline_multiple_filters():
+    assert DatadogBackend().convert(
+        SigmaCollection.from_yaml("""
+            title: Basic Sigma Rule Test for AWS
+            status: test
+            logsource:
+                product: aws
+                service: cloudtrail
+           detection:
+                selection:
+                    eventName: 'CreateInstanceExportTask'
+                    eventSource: 'ec2.amazonaws.com'
+                filter1:
+                    errorMessage|contains: '*'
+                filter2:
+                    errorCode|contains: '*'
+                filter3:
+                    responseElements|contains: 'Failure'
+                condition: selection and not 1 of filter*
+        """)
+    ) == ['@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND @filter1:errorMessage\\|contains AND @filter2:errorCode\\|contains AND @filter3:responseElements\
+\|contains AND - ()']
+
+def test_datadog_pipeline_unsupported_regex():
+    with pytest.raises(UnsupportedSyntax):
+        DatadogBackend().convert(
+            SigmaCollection.from_yaml("""
+                title: Regex Not Supported
+                status: test
+                logsource:
+                    product: aws
+                    service: cloudtrail
+                    category: any
+                detection:
+                    sel:
+                        fieldA|re: maroon*
+                    condition: sel
             """)
         )

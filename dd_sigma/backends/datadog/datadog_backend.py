@@ -15,8 +15,12 @@ sys.path.append(".")
 
 from dd_sigma.pipelines.datadog.datadog import datadog_aws_pipeline
 
+
+class UnsupportedSyntax(Exception):
+    ...
+
 class DatadogBackend(TextQueryBackend):
-    """Generates a query based on syntax here # https://docs.datadoghq.com/tracing/trace_explorer/query_syntax/"""
+    """Generates a query based on syntax here # https://docs.datadoghq.com/logs/explorer/search_syntax/"""
     name: ClassVar[str] = "Datadog Backend"
     formats: Dict[str, str] = {
         "default": "Datadog query syntax"
@@ -30,7 +34,7 @@ class DatadogBackend(TextQueryBackend):
     # Generated query tokens
     token_separator : str = " "     # separator inserted between all boolean operators
     or_token : ClassVar[str] = "OR"
-    and_token : ClassVar[str] = " " # Datadog Queries don't use AND between facets, so we're leaving this blank
+    and_token : ClassVar[str] = "AND"  # Datadog Queries don't use AND between facets, so we're leaving this blank
     not_token : ClassVar[str] = "-"
     eq_token : ClassVar[str] = ":"  # Token inserted between field and value (without separator)
 
@@ -47,10 +51,9 @@ class DatadogBackend(TextQueryBackend):
     field_escape_pattern : ClassVar[Pattern] = re.compile("\\s")   # All matches of this pattern are prepended with the string contained in field_escape.
 
 
-
     ## Values
     str_quote       : ClassVar[str] = ''      # string quoting character (added as escaping character)
-    escape_char     : ClassVar[str] = "\\"    # Escaping character for special characters inside string
+    escape_char     : ClassVar[str] = '\\'    # Escaping character for special characters inside string
     wildcard_multi  : ClassVar[str] = "*"     # Character used as multi-character wildcard
     wildcard_single : ClassVar[str] = "*"     # Character used as single-character wildcard
     add_escaped     : ClassVar[str] = ' + - = && || > < ! ( ) { } [ ] ^ “ ” ~ * ? : " '    # Characters quoted in addition to wildcards and string quote
@@ -64,21 +67,7 @@ class DatadogBackend(TextQueryBackend):
     startswith_expression : ClassVar[str] = "{field}:{value}*"
     endswith_expression   : ClassVar[str] = "{field}:*{value}"
     contains_expression   : ClassVar[str] = "{field}:*{value}*"
-    # wildcard_match_expression : ClassVar[str] = "{field} match {value}"      # Special expression if wildcards can't be matched with the eq_token operator
-
-    # Datadog currently does not support regular expressions
-    re_escape_escape_char : bool = False
-    re_flag_prefix : bool = False
-
-
-    # Case sensitive string matching expression. String is quoted/escaped like a normal string.
-    # Placeholders {field} and {value} are replaced with field name and quoted/escaped string.
-    # case_sensitive_match_expression : ClassVar[str] = "{field} casematch {value}"
-    # Case sensitive string matching operators similar to standard string matching. If not provided,
-    # case_sensitive_match_expression is used.
-    # case_sensitive_startswith_expression : ClassVar[str] = "{field} casematch_startswith {value}"
-    # case_sensitive_endswith_expression   : ClassVar[str] = "{field} casematch_endswith {value}"
-    # case_sensitive_contains_expression   : ClassVar[str] = "{field}:*{value}*"
+    icontains_token: ClassVar[str] = "{field}:*{value}*"
 
     # Numeric comparison operators
     compare_op_expression : ClassVar[str] = "{field}{operator}{value}"  # Compare operation query as format string with placeholders {field}, {operator} and {value}
@@ -95,38 +84,43 @@ class DatadogBackend(TextQueryBackend):
     field_equals_field_escaping_quoting : Tuple[bool, bool] = (True, True)   # If regular field-escaping/quoting is applied to field1 and field2. A custom escaping/quoting can be implemented in the convert_condition_field_eq_field_escape_and_quote method.
 
     # Null/None expressions
-    field_null_expression : ClassVar[str] = "{field} is null"          # Expression for field has null value as format string with {field} placeholder for field name
+    # field_null_expression : ClassVar[str] = "NOT {field}"          # Expression for field has null value as format string with {field} placeholder for field name
 
     # Field existence condition expressions.
-    field_exists_expression : ClassVar[str] = "exists({field})"             # Expression for field existence as format string with {field} placeholder for field name
-    field_not_exists_expression : ClassVar[str] = "notexists({field})"      # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
+    field_exists_expression : ClassVar[str] = "({field})"             # Expression for field existence as format string with {field} placeholder for field name
+    field_not_exists_expression : ClassVar[str] = "NOT ({field})"      # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
 
-    # Field value in list, e.g. "field in (value list)" or "field containsall (value list)"
-    # convert_or_as_in : ClassVar[bool] = True                     # Convert OR as in-expression
-    convert_and_as_in : ClassVar[bool] = True                    # Convert AND as in-expression
+    # Field value in list, e.g. "field in (value list)" or "field contains all (value list)"
+    # convert_or_as_in : ClassVar[bool] = True
+    # Convert OR as in-expression
+    # re_expression: bool = False
+    convert_and_as_in : ClassVar[bool] = False                    # Convert AND as in-expression
     in_expressions_allow_wildcards : ClassVar[bool] = True       # Values in list can contain wildcards. If set to False (default) only plain values are converted into in-expressions.
     field_in_list_expression : ClassVar[str] = "{field} {op} ({list})"  # Expression for field in list of values as format string with placeholders {field}, {op} and {list}
     or_in_operator : ClassVar[str] = ":"               # Operator used to convert OR into in-expressions. Must be set if convert_or_as_in is set
     # and_in_operator : ClassVar[str] = "contains-all"    # Operator used to convert AND into in-expressions. Must be set if convert_and_as_in is set
     list_separator : ClassVar[str] = "OR "               # List element separator
 
+    # Datadog does not support regular expressions
+    re_expression: ClassVar[bool] = False
+    re_escape_char: ClassVar[bool] = False
+    re_escape: ClassVar[Tuple[bool]] = (False, )
+    re_escape_escape_char: ClassVar[bool] = False
+
     # Value not bound to a field
     unbound_value_str_expression : ClassVar[str] = '"{value}"'   # Expression for string value not bound to a field as format string with placeholder {value}
     unbound_value_num_expression : ClassVar[str] = '{value}'     # Expression for number value not bound to a field as format string with placeholder {value}
-    # unbound_value_re_expression : ClassVar[str] = '_=~{value}'   # Expression for regular expression not bound to a field as format string with placeholder {value} and {flag_x} as described for re_expression
-
-    # Query finalization: appending and concatenating deferred query part
-    # deferred_start : ClassVar[str] = "\n| "               # String used as separator between main query and deferred parts
-    # deferred_separator : ClassVar[str] = "\n| "           # String used to join multiple deferred query parts
-    # deferred_only_query : ClassVar[str] = "*"            # String used as query if final query only contains deferred expression
-
-    # TODO: implement custom methods for query elements not covered by the default backend base.
-    # Documentation: https://sigmahq-pysigma.readthedocs.io/en/latest/Backends.html
 
 
+    def convert_condition_field_eq_val_re(self, cond: SigmaRegularExpression, state : Any) -> None:
+        """
+        This function uncoditionally raises an exception because Datadog's rule syntax does not support
+        full regular expressions.
+        In the future we can convert to the supported glob syntax in some cases.
+        """
+        raise UnsupportedSyntax("Regular expressions are not currently supported in Datadog's rule query format")
 
-
-    def finalize_cloud_siem_default_rule(self, rule: SigmaRule, query: str, index: int, state: ConversionState) -> Dict:
+    def finalize_cloud_siem_rule(self, rule: SigmaRule, query: str) -> Dict:
         """
         Generation of Datadog Cloud SIEM Detection Rules.
 
@@ -169,33 +163,6 @@ class DatadogBackend(TextQueryBackend):
         }
         return siem_rule
 
-    def finalize_output_format1(self, queries: List[str]) -> Any:
-        # TODO: implement the output finalization for all generated queries for the format format1 here. Usually,
-        # the single generated queries are embedded into a structure, e.g. some JSON or XML that can be imported into
-        # the SIEM.
-        # TODO: proper type annotation. Sigma CLI supports:
-        # - str: output as is.
-        # - bytes: output in file only (e.g. if a zip package is output).
-        # - dict: output serialized as JSON.
-        # - list of str: output each item as is separated by two newlines.
-        # - list of dict: serialize each item as JSON and output all separated by newlines.
-        return "\n".join(queries)
-
-    def finalize_query_format2(self, rule: SigmaRule, query: str, index: int, state: ConversionState) -> Any:
-        # TODO: implement the per-query output for the output format format2 here. Usually, the generated query is
-        # embedded into a template, e.g. a JSON format with additional information from the Sigma rule.
-        # TODO: proper type annotation.
-        return query
-
-    def finalize_output_format2(self, queries: List[str]) -> Any:
-        # TODO: implement the output finalization for all generated queries for the format format2 here. Usually,
-        # the single generated queries are embedded into a structure, e.g. some JSON or XML that can be imported into
-        # the SIEM.
-        # TODO: proper type annotation. Sigma CLI supports:
-        # - str: output as is.
-        # - bytes: output in file only (e.g. if a zip package is output).
-        # - dict: output serialized as JSON.
-        # - list of str: output each item as is separated by two newlines.
-        # - list of dict: serialize each item as JSON and output all separated by newlines.
-        return "\n".join(queries)
+    def finalize_output_siem_rule(self, queries: List[Dict]) -> Dict:
+        return list(queries)
 
