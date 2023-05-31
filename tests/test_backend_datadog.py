@@ -117,7 +117,7 @@ def test_datadog_complex_expressions(datadog_backend: DatadogBackend):
             )
         )
         == [
-            "@fieldA:valueA1 AND @fieldB:valueB1 OR @fieldA:valueA2 AND @fieldB:valueB2"
+            "@fieldA:valueA1 AND @fieldB:valueB1 OR @fieldA:valueA2 AND @fieldB:valueB2" # We don't need using parenthesis in this statement due to the order of precedence NOT, AND, OR specified in our backend
         ]
     )
 
