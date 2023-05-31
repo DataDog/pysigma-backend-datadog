@@ -17,4 +17,4 @@ Currently, we only support the AWS Cloudtrail log source.
 
 This backend is currently maintained by:
 
-* [Datadog](https://github.com/Datadog/)
+* [Datadog](https://github.com/Datadog/) 
