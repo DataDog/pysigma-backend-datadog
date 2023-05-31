@@ -22,10 +22,7 @@ class AggregateRuleProcessingCondition(RuleProcessingCondition):
         condition_string = " ".join(
             [field.lower() for field in rule.detection.condition]
         )
-        if any(f in condition_string for f in agg_function_strings):
-            return True
-        else:
-            return False
+        return any(f in condition_string for f in agg_function_strings)
 
 
 class DatadogFieldMappingTransformation(FieldMappingTransformation):
