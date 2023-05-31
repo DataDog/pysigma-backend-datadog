@@ -115,9 +115,10 @@ def test_datadog_complex_expressions(datadog_backend: DatadogBackend):
                 condition: 1 of sel*
         """
             )
+            # Should we add parenthesis to make the ordering explicit?
         )
         == [
-            "@fieldA:valueA1 AND @fieldB:valueB1 OR @fieldA:valueA2 AND @fieldB:valueB2"
+            "(@fieldA:valueA1 AND @fieldB:valueB1) OR (@fieldA:valueA2 AND @fieldB:valueB2)"
         ]
     )
 
@@ -140,6 +141,7 @@ def test_datadog_filters(datadog_backend: DatadogBackend):
                 condition: selection and not filter
         """
             )
+            # I think that the NOT operator `-` has to be next to the attribute
         )
         == ["@Product:*examplePhrase* AND - @Image:*\\client32.exe"]
     )
@@ -185,6 +187,7 @@ def test_datadog_cidr_query(datadog_backend: DatadogBackend):
                 condition: sel
         """
             )
+            # Do we have a warning to say that we do not support properly CIDR?
         )
         == ["@field:192.168.*"]
     )

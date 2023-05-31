@@ -89,7 +89,7 @@ def test_datadog_unsupported_rule_type():
 def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
     with pytest.raises(
         SigmaTransformationError,
-        match="The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near.",
+        match="The Datadog backend currently doesn't support rules with aggregate function conditions like count, min, max, avg, sum, and near.",
     ):
         DatadogBackend().convert(
             SigmaCollection.from_yaml(
