@@ -84,7 +84,6 @@ class DatadogBackend(TextQueryBackend):
     startswith_expression: ClassVar[str] = "{field}:{value}*"
     endswith_expression: ClassVar[str] = "{field}:*{value}"
     contains_expression: ClassVar[str] = "{field}:*{value}*"
-    icontains_token: ClassVar[str] = "{field}:*{value}*"
 
     # Numeric comparison operators
     compare_op_expression: ClassVar[
