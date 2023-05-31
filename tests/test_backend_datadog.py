@@ -141,7 +141,7 @@ def test_datadog_filters(datadog_backend: DatadogBackend):
         """
             )
         )
-        == ["@Product:*examplePhrase* AND - @Image:*\\client32.exe"]
+        == ["@Product:*examplePhrase* AND NOT @Image:*\\client32.exe"]
     )
 
 
@@ -233,7 +233,7 @@ def test_datadog_siem_rule_output(datadog_backend: DatadogBackend):
     assert dd_rule_conversion_result[0] == {
         "product": ["security_monitoring"],
         "name": "SIGMA Threshold Detection - Test",
-        "ruleId": "c277adc0-f0c4-42e1-af9d-fab062992156",
+        "message": "SIGMA Rule ID: c277adc0-f0c4-42e1-af9d-fab062992156 \n False Positives: []) \n Description: None",
         "tags": [],
         "source": "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)",
         "queries": [
@@ -280,7 +280,7 @@ def test_datadog_siem_rule_output_with_tags(datadog_backend: DatadogBackend):
     assert dd_rule_conversion_result[0] == {
         "product": ["security_monitoring"],
         "name": "SIGMA Threshold Detection - Test",
-        "ruleId": "0cb654e0-ff23-11ed-be56-0242ac120002",
+        "message": "SIGMA Rule ID: 0cb654e0-ff23-11ed-be56-0242ac120002 \n False Positives: []) \n Description: None",
         "tags": ["attack-t1548", "attack-t1550", "attack-t1550.001"],
         "source": "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)",
         "queries": [
@@ -336,13 +336,13 @@ def test_datadog_rule_types(datadog_backend: DatadogBackend):
     assert dd_rule_conversion_result[0] == {
         "product": ["security_monitoring"],
         "name": "SIGMA Threshold Detection - AWS Root Credentials",
-        "ruleId": "0cb654e0-ff23-11ed-be56-0242ac120002",
+        "message": "SIGMA Rule ID: 0cb654e0-ff23-11ed-be56-0242ac120002 \n False Positives: ['AWS Tasks That Require AWS Account Root User Credentials https://docs.aws.amazon.com/general/latest/gr/aws_tasks-that-require-root.html']) \n Description: Detects AWS root account usage",
         "tags": ["attack-privilege_escalation", "attack-t1078.004"],
         "source": "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)",
         "queries": [
             {
                 "name": "",
-                "query": "@userIdentity.type:Root AND - @eventType:AwsServiceEvent",
+                "query": "@userIdentity.type:Root AND NOT @eventType:AwsServiceEvent",
                 "groupByFields": [],
                 "distinctFields": [],
                 "aggregation": "",

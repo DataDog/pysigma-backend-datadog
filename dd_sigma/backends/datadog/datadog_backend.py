@@ -44,7 +44,7 @@ class DatadogBackend(TextQueryBackend):
     token_separator: str = " "  # separator inserted between all boolean operators
     or_token: ClassVar[str] = "OR"
     and_token: ClassVar[str] = "AND"
-    not_token: ClassVar[str] = "-"
+    not_token: ClassVar[str] = "NOT"
     eq_token: ClassVar[
         str
     ] = ":"  # Token inserted between field and value (without separator)
@@ -80,7 +80,7 @@ class DatadogBackend(TextQueryBackend):
         False: "false",
     }
 
-    # # String matching operators. if none is appropriate eq_token is used.
+    # String matching operators. if none is appropriate eq_token is used.
     startswith_expression: ClassVar[str] = "{field}:{value}*"
     endswith_expression: ClassVar[str] = "{field}:*{value}"
     contains_expression: ClassVar[str] = "{field}:*{value}*"
@@ -89,13 +89,13 @@ class DatadogBackend(TextQueryBackend):
     # Numeric comparison operators
     compare_op_expression: ClassVar[
         str
-    ] = "{field}{operator}{value}"  # Compare operation query as format string with placeholders {field}, {operator} and {value}
+    ] = "{field}:{operator}{value}"  # Compare operation query as format string with placeholders {field}, {operator} and {value}
     # Mapping between CompareOperators elements and strings used as replacement for {operator} in compare_op_expression
     compare_operators: ClassVar[Dict[SigmaCompareExpression.CompareOperators, str]] = {
-        SigmaCompareExpression.CompareOperators.LT: "<",
-        SigmaCompareExpression.CompareOperators.LTE: "<=",
         SigmaCompareExpression.CompareOperators.GT: ">",
         SigmaCompareExpression.CompareOperators.GTE: ">=",
+        SigmaCompareExpression.CompareOperators.LT: ">",
+        SigmaCompareExpression.CompareOperators.LTE: ">=",
     }
 
     # Expression for comparing two event fields
@@ -113,7 +113,7 @@ class DatadogBackend(TextQueryBackend):
     ] = "({field})"  # Expression for field existence as format string with {field} placeholder for field name
     field_not_exists_expression: ClassVar[
         str
-    ] = "- ({field})"  # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
+    ] = "NOT ({field})"  # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
 
     # Field value in list, e.g. "field in (value list)" or "field contains all (value list)"
     # Convert OR as in-expression
@@ -123,7 +123,7 @@ class DatadogBackend(TextQueryBackend):
     ] = True  # Values in list can contain wildcards. If set to False (default) only plain values are converted into in-expressions.
     field_in_list_expression: ClassVar[
         str
-    ] = "{field} {op} ({list})"  # Expression for field in list of values as format string with placeholders {field}, {op} and {list}
+    ] = "{field}{op}({list})"  # Expression for field in list of values as format string with placeholders {field}, {op} and {list}
     or_in_operator: ClassVar[
         str
     ] = ":"  # Operator used to convert OR into in-expressions. Must be set if convert_or_as_in is set
@@ -164,7 +164,7 @@ class DatadogBackend(TextQueryBackend):
         siem_rule = {
             "product": ["security_monitoring"],
             "name": f"SIGMA Threshold Detection - {rule.title}",
-            "ruleId": str(rule.id),
+            "message": f"SIGMA Rule ID: {str(rule.id)} \n False Positives: {rule.falsepositives}) \n Description: {rule.description}",
             "tags": [f"{n.namespace}-{n.name}" for n in rule.tags],
             "source": f"{rule.logsource}",
             "queries": [

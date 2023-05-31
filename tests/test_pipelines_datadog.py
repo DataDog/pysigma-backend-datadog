@@ -85,7 +85,8 @@ def test_datadog_unsupported_rule_type():
             )
         )
 
-
+# This test also accounts for less than operators not appearing in rules as the less than operator is used with aggregate functions.
+# Since we can't use aggregate functions, we won't have anything to compare them with.
 def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
     with pytest.raises(
         SigmaTransformationError,
@@ -102,8 +103,8 @@ def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
                     category: any
                 detection:
                     sel:
-                        field: maroon
-                    condition: sel | max() = 10
+                        field: 'suspicious'
+                    condition: sel | max() < 3
             """
             )
         )
@@ -134,7 +135,7 @@ def test_datadog_pipeline_multiple_filters():
             )
         )
         == [
-            "@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND - (@errorMessage:* OR @errorCode:* OR @responseElements:*Failure*)"
+            "@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND NOT (@errorMessage:* OR @errorCode:* OR @responseElements:*Failure*)"
         ]
     )
 
