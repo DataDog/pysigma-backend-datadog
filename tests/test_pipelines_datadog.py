@@ -7,13 +7,18 @@ from dd_sigma.backends.datadog.datadog_backend import UnsupportedSyntax
 
 # TODO: Remove once Datadog Backend is published in PySigma
 import sys
+
 sys.path.append(".")
 from dd_sigma.backends.datadog import DatadogBackend
+
 # from sigma.backends.datadog import DatadogBackend TODO: Reenable this line once our backend is published
 
+
 def test_datadog_pipeline_aws_simple():
-    assert DatadogBackend().convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        DatadogBackend().convert(
+            SigmaCollection.from_yaml(
+                """
             title: Basic Sigma Rule Test for AWS
             status: test
             logsource:
@@ -24,13 +29,18 @@ def test_datadog_pipeline_aws_simple():
                     eventSource: 'cloudtrail.amazonaws.com'
                     eventName: 'LookupEvents'
                 condition: sel
-        """)
-    ) == ['@eventSource:cloudtrail.amazonaws.com AND @eventName:LookupEvents']
+        """
+            )
+        )
+        == ["@eventSource:cloudtrail.amazonaws.com AND @eventName:LookupEvents"]
+    )
 
 
 def test_datadog_multiple_evt_names():
-    assert DatadogBackend().convert(
-            SigmaCollection.from_yaml("""
+    assert (
+        DatadogBackend().convert(
+            SigmaCollection.from_yaml(
+                """
                 title: Multiple Event Names
                 status: test
                 logsource:
@@ -44,14 +54,23 @@ def test_datadog_multiple_evt_names():
                             - 'PutBucketWebsite'
                             - 'PutEncryptionConfiguration'
                     condition: sel
-            """)
-        ) == ['@eventSource:s3.amazonaws.com AND (@eventName:PutBucketLogging OR @eventName:PutBucketWebsite OR @eventName:PutEncryptionConfiguration)']
+            """
+            )
+        )
+        == [
+            "@eventSource:s3.amazonaws.com AND (@eventName:PutBucketLogging OR @eventName:PutBucketWebsite OR @eventName:PutEncryptionConfiguration)"
+        ]
+    )
 
 
 def test_datadog_unsupported_rule_type():
-    with pytest.raises(SigmaTransformationError, match="Conversion for rule type not yet suppported by the Datadog Backend."):
+    with pytest.raises(
+        SigmaTransformationError,
+        match="Conversion for rule type not yet suppported by the Datadog Backend.",
+    ):
         DatadogBackend().convert(
-            SigmaCollection.from_yaml("""
+            SigmaCollection.from_yaml(
+                """
                 title: Rule type not supported
                 status: test
                 logsource:
@@ -62,13 +81,19 @@ def test_datadog_unsupported_rule_type():
                     sel:
                         field: anyfield
                     condition: sel
-            """)
+            """
+            )
         )
 
+
 def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
-    with pytest.raises(SigmaTransformationError, match="The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near."):
+    with pytest.raises(
+        SigmaTransformationError,
+        match="The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near.",
+    ):
         DatadogBackend().convert(
-            SigmaCollection.from_yaml("""
+            SigmaCollection.from_yaml(
+                """
                 title: Aggregate Rules Not Supported
                 status: test
                 logsource:
@@ -79,13 +104,16 @@ def test_datadog_pipeline_unsupported_aggregate_conditions_rule_type():
                     sel:
                         field: maroon
                     condition: sel | max() = 10
-            """)
+            """
+            )
         )
 
 
 def test_datadog_pipeline_multiple_filters():
-    assert DatadogBackend().convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        DatadogBackend().convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test Filters
             status: test
             logsource:
@@ -102,13 +130,20 @@ def test_datadog_pipeline_multiple_filters():
                 filter3:
                     responseElements|contains: 'Failure'
                 condition: selection and not 1 of filter*
-        """)
-    ) == ['@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND - (@errorMessage:* OR @errorCode:* OR @responseElements:*Failure*)']
+        """
+            )
+        )
+        == [
+            "@eventName:CreateInstanceExportTask AND @eventSource:ec2.amazonaws.com AND - (@errorMessage:* OR @errorCode:* OR @responseElements:*Failure*)"
+        ]
+    )
+
 
 def test_datadog_pipeline_unsupported_regex():
     with pytest.raises(UnsupportedSyntax):
         DatadogBackend().convert(
-            SigmaCollection.from_yaml("""
+            SigmaCollection.from_yaml(
+                """
                 title: Regex Not Supported
                 status: test
                 logsource:
@@ -119,5 +154,6 @@ def test_datadog_pipeline_unsupported_regex():
                     sel:
                         fieldA|re: maroon*
                     condition: sel
-            """)
+            """
+            )
         )
