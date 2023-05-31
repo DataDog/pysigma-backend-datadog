@@ -2,8 +2,9 @@
 import pytest
 from sigma.collection import SigmaCollection
 
-#TODO: Remove once backend is published in pySigma
+# TODO: Remove once backend is published in pySigma
 import sys
+
 sys.path.append(".")
 # from sigma.backends.datadog import DatadogBackend
 
@@ -19,10 +20,13 @@ def test_always_passes():
 def datadog_backend():
     return DatadogBackend()
 
+
 ## Query Conversions
 def test_datadog_and_expression(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test
             status: test
             logsource:
@@ -33,13 +37,18 @@ def test_datadog_and_expression(datadog_backend: DatadogBackend):
                     fieldA: valueA
                     fieldB: valueB
                 condition: sel
-        """)
-    ) == ['@fieldA:valueA AND @fieldB:valueB']
+        """
+            )
+        )
+        == ["@fieldA:valueA AND @fieldB:valueB"]
+    )
 
 
 def test_datadog_or_expression(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test
             status: test
             logsource:
@@ -51,14 +60,18 @@ def test_datadog_or_expression(datadog_backend: DatadogBackend):
                 sel2:
                     fieldB: valueB
                 condition: 1 of sel*
-        """)
-    ) == ['@fieldA:valueA OR @fieldB:valueB']
-
+        """
+            )
+        )
+        == ["@fieldA:valueA OR @fieldB:valueB"]
+    )
 
 
 def test_datadog_and_or_expression(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test
             status: test
             logsource:
@@ -73,14 +86,20 @@ def test_datadog_and_or_expression(datadog_backend: DatadogBackend):
                         - valueB1
                         - valueB2
                 condition: sel
-        """)
-    ) == ['(@fieldA:valueA1 OR @fieldA:valueA2) AND (@fieldB:valueB1 OR @fieldB:valueB2)']
-
+        """
+            )
+        )
+        == [
+            "(@fieldA:valueA1 OR @fieldA:valueA2) AND (@fieldB:valueB1 OR @fieldB:valueB2)"
+        ]
+    )
 
 
 def test_datadog_complex_expressions(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test
             status: test
             logsource:
@@ -94,12 +113,20 @@ def test_datadog_complex_expressions(datadog_backend: DatadogBackend):
                     fieldA: valueA2
                     fieldB: valueB2
                 condition: 1 of sel*
-        """)
-    ) == ['@fieldA:valueA1 AND @fieldB:valueB1 OR @fieldA:valueA2 AND @fieldB:valueB2']
+        """
+            )
+        )
+        == [
+            "@fieldA:valueA1 AND @fieldB:valueB1 OR @fieldA:valueA2 AND @fieldB:valueB2"
+        ]
+    )
+
 
 def test_datadog_filters(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test
             status: test
             logsource:
@@ -111,12 +138,18 @@ def test_datadog_filters(datadog_backend: DatadogBackend):
                 filter:
                     Image|endswith: '\client32.exe'
                 condition: selection and not filter
-        """)
-    ) == ['@Product:*examplePhrase* AND - @Image:*\\client32.exe']
+        """
+            )
+        )
+        == ["@Product:*examplePhrase* AND - @Image:*\\client32.exe"]
+    )
+
 
 def test_datadog_wildcard_expression(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Test
             status: test
             logsource:
@@ -129,13 +162,18 @@ def test_datadog_wildcard_expression(datadog_backend: DatadogBackend):
                         - valueB
                         - valueC*
                 condition: sel
-        """)
-    ) == ['@fieldA:valueA OR @fieldA:valueB OR @fieldA:valueC*']
+        """
+            )
+        )
+        == ["@fieldA:valueA OR @fieldA:valueB OR @fieldA:valueC*"]
+    )
 
 
 def test_datadog_cidr_query(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Cidr Test
             status: test
             logsource:
@@ -145,13 +183,18 @@ def test_datadog_cidr_query(datadog_backend: DatadogBackend):
                 sel:
                     field|cidr: 192.168.0.0/16
                 condition: sel
-        """)
-    ) == ['@field:192.168.*']
+        """
+            )
+        )
+        == ["@field:192.168.*"]
+    )
 
 
 def test_datadog_field_name_with_whitespace(datadog_backend: DatadogBackend):
-    assert datadog_backend.convert(
-        SigmaCollection.from_yaml("""
+    assert (
+        datadog_backend.convert(
+            SigmaCollection.from_yaml(
+                """
             title: Blank Space Test
             status: test
             logsource:
@@ -161,15 +204,18 @@ def test_datadog_field_name_with_whitespace(datadog_backend: DatadogBackend):
                 sel:
                     field name: value
                 condition: sel
-        """)
-    ) == ['@field\\ name:value']  # double slash is escaping the escape
-
+        """
+            )
+        )
+        == ["@field\\ name:value"]
+    )  # double slash is escaping the escape
 
 
 ## Rule Conversions
 def test_datadog_siem_rule_output(datadog_backend: DatadogBackend):
     """Test for NDJSON output with embedded query string query."""
-    rule = SigmaCollection.from_yaml("""
+    rule = SigmaCollection.from_yaml(
+        """
             title: Test
             id: c277adc0-f0c4-42e1-af9d-fab062992156
             status: test
@@ -181,13 +227,38 @@ def test_datadog_siem_rule_output(datadog_backend: DatadogBackend):
                     fieldA: valueA
                     fieldB: valueB
                 condition: sel
-        """)
+        """
+    )
     dd_rule_conversion_result = datadog_backend.convert(rule, output_format="siem_rule")
-    assert dd_rule_conversion_result[0] == {'product': ['security_monitoring'], 'name': 'SIGMA Threshold Detection - Test', 'ruleId': 'c277adc0-f0c4-42e1-af9d-fab062992156', 'tags': [], 'source': "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)", 'queries': [{'name': '', 'query': '@fieldA:valueA AND @fieldB:valueB', 'groupByFields': [], 'distinctFields': [], 'aggregation': ''}], 'options': {'detectionMethod': 'threshold', 'evaluationWindow': 300, 'keepAlive': 3600, 'maxSignalDuration': 7200}, 'cases': [{'condition': '', 'name': '', 'status': 'low', 'notifications': []}]}
+    assert dd_rule_conversion_result[0] == {
+        "product": ["security_monitoring"],
+        "name": "SIGMA Threshold Detection - Test",
+        "ruleId": "c277adc0-f0c4-42e1-af9d-fab062992156",
+        "tags": [],
+        "source": "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)",
+        "queries": [
+            {
+                "name": "",
+                "query": "@fieldA:valueA AND @fieldB:valueB",
+                "groupByFields": [],
+                "distinctFields": [],
+                "aggregation": "",
+            }
+        ],
+        "options": {
+            "detectionMethod": "threshold",
+            "evaluationWindow": 300,
+            "keepAlive": 3600,
+            "maxSignalDuration": 7200,
+        },
+        "cases": [{"condition": "", "name": "", "status": "low", "notifications": []}],
+    }
+
 
 def test_datadog_siem_rule_output_with_tags(datadog_backend: DatadogBackend):
     """Test for NDJSON output with embedded query string query."""
-    rule = SigmaCollection.from_yaml("""
+    rule = SigmaCollection.from_yaml(
+        """
             title: Test
             id: 0cb654e0-ff23-11ed-be56-0242ac120002
             status: test
@@ -203,14 +274,38 @@ def test_datadog_siem_rule_output_with_tags(datadog_backend: DatadogBackend):
                     fieldA: valueA
                     fieldB: valueB
                 condition: sel
-        """)
+        """
+    )
     dd_rule_conversion_result = datadog_backend.convert(rule, output_format="siem_rule")
-    assert dd_rule_conversion_result[0] == {'product': ['security_monitoring'], 'name': 'SIGMA Threshold Detection - Test', 'ruleId': '0cb654e0-ff23-11ed-be56-0242ac120002', 'tags': ['attack-t1548', 'attack-t1550', 'attack-t1550.001'], 'source': "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)", 'queries': [{'name': '', 'query': '@fieldA:valueA AND @fieldB:valueB', 'groupByFields': [], 'distinctFields': [], 'aggregation': ''}], 'options': {'detectionMethod': 'threshold', 'evaluationWindow': 300, 'keepAlive': 3600, 'maxSignalDuration': 7200}, 'cases': [{'condition': '', 'name': '', 'status': 'low', 'notifications': []}]}
+    assert dd_rule_conversion_result[0] == {
+        "product": ["security_monitoring"],
+        "name": "SIGMA Threshold Detection - Test",
+        "ruleId": "0cb654e0-ff23-11ed-be56-0242ac120002",
+        "tags": ["attack-t1548", "attack-t1550", "attack-t1550.001"],
+        "source": "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)",
+        "queries": [
+            {
+                "name": "",
+                "query": "@fieldA:valueA AND @fieldB:valueB",
+                "groupByFields": [],
+                "distinctFields": [],
+                "aggregation": "",
+            }
+        ],
+        "options": {
+            "detectionMethod": "threshold",
+            "evaluationWindow": 300,
+            "keepAlive": 3600,
+            "maxSignalDuration": 7200,
+        },
+        "cases": [{"condition": "", "name": "", "status": "low", "notifications": []}],
+    }
 
 
 def test_datadog_rule_types(datadog_backend: DatadogBackend):
     """Test for NDJSON output with embedded query string query."""
-    rule = SigmaCollection.from_yaml("""
+    rule = SigmaCollection.from_yaml(
+        """
             title: AWS Root Credentials
             id: 0cb654e0-ff23-11ed-be56-0242ac120002
             status: test
@@ -235,7 +330,31 @@ def test_datadog_rule_types(datadog_backend: DatadogBackend):
             falsepositives:
                 - AWS Tasks That Require AWS Account Root User Credentials https://docs.aws.amazon.com/general/latest/gr/aws_tasks-that-require-root.html
             level: medium
-        """)
+        """
+    )
     dd_rule_conversion_result = datadog_backend.convert(rule, output_format="siem_rule")
-    assert dd_rule_conversion_result[0] == {'product': ['security_monitoring'], 'name': 'SIGMA Threshold Detection - AWS Root Credentials', 'ruleId': '0cb654e0-ff23-11ed-be56-0242ac120002', 'tags': ['attack-privilege_escalation', 'attack-t1078.004'], 'source': "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)", 'queries': [{'name': '', 'query': '@userIdentity.type:Root AND - @eventType:AwsServiceEvent', 'groupByFields': [], 'distinctFields': [], 'aggregation': ''}], 'options': {'detectionMethod': 'threshold', 'evaluationWindow': 300, 'keepAlive': 3600, 'maxSignalDuration': 7200}, 'cases': [{'condition': '', 'name': '', 'status': 'medium', 'notifications': []}]}
-
+    assert dd_rule_conversion_result[0] == {
+        "product": ["security_monitoring"],
+        "name": "SIGMA Threshold Detection - AWS Root Credentials",
+        "ruleId": "0cb654e0-ff23-11ed-be56-0242ac120002",
+        "tags": ["attack-privilege_escalation", "attack-t1078.004"],
+        "source": "SigmaLogSource(category=None, product='aws', service='cloudtrail', source=None)",
+        "queries": [
+            {
+                "name": "",
+                "query": "@userIdentity.type:Root AND - @eventType:AwsServiceEvent",
+                "groupByFields": [],
+                "distinctFields": [],
+                "aggregation": "",
+            }
+        ],
+        "options": {
+            "detectionMethod": "threshold",
+            "evaluationWindow": 300,
+            "keepAlive": 3600,
+            "maxSignalDuration": 7200,
+        },
+        "cases": [
+            {"condition": "", "name": "", "status": "medium", "notifications": []}
+        ],
+    }
