@@ -193,3 +193,4 @@ class DatadogBackend(TextQueryBackend):
 
     def finalize_output_siem_rule(self, queries: List[Dict]) -> Dict:
         return list(queries)
+

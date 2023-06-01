@@ -159,3 +159,4 @@ def test_datadog_pipeline_unsupported_regex():
             """
             )
         )
+
