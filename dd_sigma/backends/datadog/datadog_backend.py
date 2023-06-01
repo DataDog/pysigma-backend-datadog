@@ -94,7 +94,7 @@ class DatadogBackend(TextQueryBackend):
     compare_operators: ClassVar[Dict[SigmaCompareExpression.CompareOperators, str]] = {
         SigmaCompareExpression.CompareOperators.GT: ">",
         SigmaCompareExpression.CompareOperators.GTE: ">=",
-        SigmaCompareExpression.CompareOperators.LT: ">",
+        SigmaCompareExpression.CompareOperators.LT: "<",
         SigmaCompareExpression.CompareOperators.LTE: ">=",
     }
 
@@ -118,15 +118,10 @@ class DatadogBackend(TextQueryBackend):
     # Field value in list, e.g. "field in (value list)" or "field contains all (value list)"
     # Convert OR as in-expression
     convert_and_as_in: ClassVar[bool] = False  # Convert AND as in-expression
-    in_expressions_allow_wildcards: ClassVar[
-        bool
-    ] = True  # Values in list can contain wildcards. If set to False (default) only plain values are converted into in-expressions.
     field_in_list_expression: ClassVar[
         str
     ] = "{field}{op}({list})"  # Expression for field in list of values as format string with placeholders {field}, {op} and {list}
-    or_in_operator: ClassVar[
-        str
-    ] = ":"  # Operator used to convert OR into in-expressions. Must be set if convert_or_as_in is set
+
     # and_in_operator : ClassVar[str] = "contains-all"    # Operator used to convert AND into in-expressions. Must be set if convert_and_as_in is set
     list_separator: ClassVar[str] = "OR "  # List element separator
 
@@ -166,30 +161,30 @@ class DatadogBackend(TextQueryBackend):
             "name": f"SIGMA Threshold Detection - {rule.title}",
             "message": f"SIGMA Rule ID: {str(rule.id)} \n False Positives: {rule.falsepositives}) \n Description: {rule.description}",
             "tags": [f"{n.namespace}-{n.name}" for n in rule.tags],
-            "source": f"{rule.logsource}",
+            "source": f"{rule.logsource.service}",
             "queries": [
                 {
                     "name": "",
                     "query": query,
-                    "groupByFields": [],
+                    "groupByFields": ["@userIdentity.arn"],
                     "distinctFields": [],
                     "aggregation": "",
                 }
             ],
             "options": {
                 "detectionMethod": "threshold",
-                "evaluationWindow": 300,
+                "evaluationWindow": 3600,
                 "keepAlive": 3600,
-                "maxSignalDuration": 7200,
+                "maxSignalDuration": 86400,
             },
             "cases": [
                 {
-                    "condition": "",
-                    "name": "",
                     "status": str(rule.level.name).lower()
                     if rule.level is not None
                     else "low",
                     "notifications": [],
+                    "name": "",
+                    "condition": "a > 0",
                 }
             ],
         }

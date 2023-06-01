@@ -74,7 +74,7 @@ def datadog_aws_pipeline() -> (
             ProcessingItem(
                 identifier="dd_fails_rule_conditions_not_supported",
                 transformation=RuleFailureTransformation(
-                    "The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near."
+                    "The Datadog backend currently doesn't support rules with with aggregate function conditions like count, min, max, avg, sum, and near as they're deprecated in the Sigma Spec. For more information, see: https://sigmahq.github.io/sigma-specification/Sigma_specification.html"
                 ),
                 rule_conditions=[AggregateRuleProcessingCondition()],
             ),
