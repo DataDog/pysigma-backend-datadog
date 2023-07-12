@@ -1,0 +1,7 @@
+Component,Origin,License,Copyright
+pysigma,https://github.com/SigmaHQ/pySigma,LGPL-2.1-license,Copyright 2022 Thomas Patzke
+sigma,https://github.com/SigmaHQ/sigma,DRL-1.1,Copyright 2022 SigmaHQ & Thomas Patzke
+cookiecutter-pySigma-backend,https://github.com/SigmaHQ/cookiecutter-pySigma-backend,MIT License,Copyright 2022 - Thomas Patzke
+re,https://docs.python.org/3/library/re.html,Python-Software-Foundation-License-Version-2 + GPL,Copyright 2001-2023 - Python Software Foundation
+json,https://docs.python.org/3/library/json.html,Python-Software-Foundation-License-Version-2 + Zero Clause BSD License and GPL,Copyright 2003-2021 - Python Software Foundation
+pytest,https://docs.pytest.org/en/7.3.x/,The MIT License (MIT) + Holger Krekel and pytest-dev team,Copyright 2015 - Pytest
