@@ -4,13 +4,7 @@ import json
 import re
 from sigma.collection import SigmaCollection
 
-# from sigma.backends.datadog import DatadogBackend
-
-# TODO: Remove the following hack once the Datadog Backend is published in PySigma and renable line above
-import sys
-
-sys.path.append(".")
-from dd_sigma.backends.datadog import DatadogBackend
+from sigma.backends.datadog import DatadogBackend
 
 # To convert a Datadog Rule from a Sigma rule (for testing purposes) use:
 # datadog_backend.convert(sigma_rule, output_format="siem_rule")

@@ -1,12 +1,7 @@
 from sigma.collection import SigmaCollection
 
-# Once backend is supported by sigma, enable the line below:
-# from sigma.backends.datadog import DatadogBackend
-# Until the DatadogBackend is supported by Sigma, use the following hack:
-import sys
+from sigma.backends.datadog import DatadogBackend
 
-sys.path.append(".")
-from dd_sigma.backends.datadog import DatadogBackend
 
 # Create the Datadog Pipeline and Backend
 datadog_backend = DatadogBackend()
