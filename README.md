@@ -1,5 +1,5 @@
 ## Disclaimer 
-On Thursday, July 13th, we submitted the Datadog PySigma backend to the maintainers of Sigma and the `main` branch has broken imports that will be resolved once the Datadog backend is supported. In the meantime, the `pysigma-datadog-backend-local` branch can be run locally. 
+On Thursday, July 13th, 2023, we submitted the Datadog PySigma backend to the maintainers of Sigma and the `main` branch has broken imports that will be resolved once the Datadog backend is supported. In the meantime, the `pysigma-datadog-backend-local` branch can be run locally. 
 
 ## Overview
 This repository contains the Datadog backend package (`sigma.backends.datadog`) for pySigma. This package contains the DatadogBackend class, which can be used to convert Sigma rules to Datadog rules and queries that will work with [Datadog’s Log Management](https://www.datadoghq.com/product/log-management/) and [Datadog's Cloud SIEM](https://www.datadoghq.com/product/cloud-siem/)  products.
