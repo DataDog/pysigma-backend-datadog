@@ -1,4 +1,4 @@
-from .pipelines.datadog import datadog_pipeline
+from .datadog_pipeline import datadog_pipeline
 
 pipelines = {
     "datadog_pipeline": datadog_pipeline,

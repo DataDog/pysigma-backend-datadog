@@ -13,7 +13,7 @@ from sigma.processing.conditions import (
 from sigma.processing.pipeline import ProcessingItem, ProcessingPipeline
 from sigma.rule import SigmaRule
 
-
+import sigma
 class AggregateRuleProcessingCondition(RuleProcessingCondition):
     def match(
         self, pipeline: "sigma.processing.pipeline.ProcessingPipeline", rule: SigmaRule

@@ -12,7 +12,7 @@ from sigma.processing.pipeline import ProcessingPipeline
 from sigma.conditions import ConditionItem, ConditionAND, ConditionOR, ConditionNOT
 from sigma.types import SigmaCompareExpression, SigmaRegularExpression
 
-from sigma.pipelines.datadog.datadog import datadog_pipeline
+from sigma.pipelines.datadog import datadog_pipeline
 
 # Empty class for unsupported syntax like RegEx which raises an exception
 class UnsupportedSyntax(Exception):
