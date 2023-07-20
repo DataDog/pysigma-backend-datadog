@@ -27,18 +27,18 @@ class AggregateRuleProcessingCondition(RuleProcessingCondition):
 
 
 class DatadogFieldMappingTransformation(FieldMappingTransformation):
-    def get_mapping(self, field):
-        """
-        If a field is not mapped using a Datadog Field Transformation for OOTB facets, inclued an @ sign to indicate
-        the field is a facet. Users should double check that facets output by the pySigma-datadog-facets match the ones
-        in their environment. Because facets are arbitrary, users should manually review each facet output from pySigma
-        queries.
-        """
-        mapping = self.mapping.get(field)
-        if not mapping:
-            return f"@{field}"
-        else:
-            return mapping
+# def get_mapping(self, field):
+#     """
+#     If a field is not mapped using a Datadog Field Transformation for OOTB facets, inclued an @ sign to indicate
+#     the field is a facet. Users should double check that facets output by the pySigma-datadog-facets match the ones
+#     in their environment. Because facets are arbitrary, users should manually review each facet output from pySigma
+#     queries.
+#     """
+#     mapping = self.mapping.get(field)
+#     if not mapping:
+#         return f"@{field}"
+#     else:
+#         return mapping
 
 
 def datadog_pipeline() -> ProcessingPipeline:
