@@ -29,7 +29,7 @@ class DatadogBackend(TextQueryBackend):
         "use the output from the siem_rule in your repository. https://docs.datadoghq.com/api/latest/security-monitoring/?code-lang=curl",
     }
     processing_pipeline: ProcessingPipeline
-    requires_pipeline: bool = True
+    requires_pipeline: bool = False
     backend_processing_pipeline: ClassVar[ProcessingPipeline] = datadog_pipeline()
 
     # The backend generates grouping if required
