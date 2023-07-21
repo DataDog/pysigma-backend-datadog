@@ -34,6 +34,7 @@ class DatadogFieldMappingTransformation(FieldMappingTransformation):
 #     in their environment. Because facets are arbitrary, users should manually review each facet output from pySigma
 #     queries.
 #     """
+# May reenable this:
 #     mapping = self.mapping.get(field)
 #     if not mapping:
 #         return f"@{field}"
@@ -95,13 +96,13 @@ def datadog_pipeline() -> ProcessingPipeline:
                 transformation=DatadogFieldMappingTransformation(
                     {
                         # Azure field mapping overrides
-                        "category": "evt.category",
-                        "operationName": "evt.name",
-                        "properties.result": "evt.outcome",
-                        "callerIpAddress": "network.client.ip",
-                        "identity.authorization.evidence.principalId": "usr.id",
-                        "ResultType": "evt.outcome",
-                        "resultType": "evt.outcome",
+                        "category": "@evt.category",
+                        "operationName": "@evt.name",
+                        "properties.result": "@evt.outcome",
+                        "callerIpAddress": "@network.client.ip",
+                        "identity.authorization.evidence.principalId": "@usr.id",
+                        "ResultType": "@evt.outcome",
+                        "resultType": "@evt.outcome",
                     }
                 ),
                 rule_conditions=[LogsourceCondition(product="azure")],
@@ -111,16 +112,16 @@ def datadog_pipeline() -> ProcessingPipeline:
                 transformation=DatadogFieldMappingTransformation(
                     {
                         # GCP field mapping overrides
-                        "data.httpRequest.remoteIp": "network.client.ip",
-                        "data.httpRequest.requestMethod": "http.method",
-                        "data.httpRequest.status": "http.status_code",
-                        "data.protoPayload.authenticationInfo.principalEmail": "usr.email",
-                        "data.protoPayload.status.code": "evt.status_code",
-                        "data.protoPayload.methodName": "evt.name",
-                        "data.protoPayload.requestMetadata.callerIp": "network.client.ip",
-                        "data.protoPayload.requestMetadata.callerSuppliedUserAgent": "http.useragent",
-                        "data.protoPayload.status.message": "evt.outcome",
-                        "data.severity": "evt.outcome",
+                        "data.httpRequest.remoteIp": "@network.client.ip",
+                        "data.httpRequest.requestMethod": "@http.method",
+                        "data.httpRequest.status": "@http.status_code",
+                        "data.protoPayload.authenticationInfo.principalEmail": "@usr.email",
+                        "data.protoPayload.status.code": "@evt.status_code",
+                        "data.protoPayload.methodName": "@evt.name",
+                        "data.protoPayload.requestMetadata.callerIp": "@network.client.ip",
+                        "data.protoPayload.requestMetadata.callerSuppliedUserAgent": "@http.useragent",
+                        "data.protoPayload.status.message": "@evt.outcome",
+                        "data.severity": "@evt.outcome",
                     }
                 ),
                 rule_conditions=[LogsourceCondition(product="gcp")],
@@ -130,27 +131,27 @@ def datadog_pipeline() -> ProcessingPipeline:
                 transformation=DatadogFieldMappingTransformation(
                     {
                         # AWS field mapping overrides
-                        "eventSource": "evt.source",
-                        "eventName": "evt.name",
-                        "requestID": "http.request_id",
-                        "sourceIPAddress": "network.client.ip",
-                        "src_endpoint.ip": "network.client.ip",
-                        "errorCode": "error.kind",
-                        "errorMessage": "error.message",
-                        "api.response.message": "error.message",
-                        "userAgent": "http.useragent",
-                        "http_request.user_agent": "http.useragent",
-                        "api.operation": "evt.name",
-                        "userIdentity.userName": "usr.name",
-                        "userIdentity.sessionContext.sessionIssuer.userName": "userIdentity.assumed_role",
-                        "recipientAccountId": "account",
-                        "aws_account": "account",
-                        "awsRegion": "region",
-                        "cloud.region": "region",
-                        "answer": "answer",
-                        "userIdentity": "usr.identity",
-                        "eventType": "evt.type",
-                        "userIdentity.arn": "usr.identity.arn",
+                        "eventSource": "@evt.source",
+                        "eventName": "@evt.name",
+                        "requestID": "@http.request_id",
+                        "sourceIPAddress": "@network.client.ip",
+                        "src_endpoint.ip": "@network.client.ip",
+                        "errorCode": "@error.kind",
+                        "errorMessage": "@error.message",
+                        "api.response.message": "@error.message",
+                        "userAgent": "@http.useragent",
+                        "http_request.user_agent": "@http.useragent",
+                        "api.operation": "@evt.name",
+                        "userIdentity.userName": "@usr.name",
+                        "userIdentity.sessionContext.sessionIssuer.userName": "@userIdentity.assumed_role",
+                        "recipientAccountId": "@account",
+                        "aws_account": "@account",
+                        "awsRegion": "@region",
+                        "cloud.region": "@region",
+                        "answer": "@answer",
+                        "userIdentity": "@usr.identity",
+                        "eventType": "@evt.type",
+                        "userIdentity.arn": "@usr.identity.arn",
                     }
                 ),
                 rule_conditions=[
