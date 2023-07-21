@@ -11,12 +11,9 @@ from sigma.conversion.base import TextQueryBackend
 from sigma.processing.pipeline import ProcessingPipeline
 from sigma.conditions import ConditionItem, ConditionAND, ConditionOR, ConditionNOT
 from sigma.types import SigmaCompareExpression, SigmaRegularExpression
+from sigma.exceptions import SigmaFeatureNotSupportedByBackendError
 
 from sigma.pipelines.datadog import datadog_pipeline
-
-# Empty class for unsupported syntax like RegEx which raises an exception
-class UnsupportedSyntax(Exception):
-    ...
 
 
 class DatadogBackend(TextQueryBackend):
@@ -149,7 +146,7 @@ class DatadogBackend(TextQueryBackend):
         This function unconditionally raises an exception because Datadog's rule syntax does not support
         full regular expressions.
         """
-        raise UnsupportedSyntax(
+        raise SigmaFeatureNotSupportedByBackendError(
             "Regular expressions are not currently supported in Datadog's rule query format"
         )
 

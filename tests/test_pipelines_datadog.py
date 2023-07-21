@@ -1,8 +1,7 @@
 # pylint: disable=too-many-lines
 import pytest
 from sigma.collection import SigmaCollection
-from sigma.exceptions import SigmaTransformationError
-from sigma.backends.datadog.datadog_backend import UnsupportedSyntax
+from sigma.exceptions import SigmaTransformationError, SigmaFeatureNotSupportedByBackendError
 
 
 from sigma.backends.datadog import DatadogBackend
@@ -221,7 +220,7 @@ def test_datadog_pipeline_multiple_filters():
 
 
 def test_datadog_pipeline_unsupported_regex():
-    with pytest.raises(UnsupportedSyntax):
+    with pytest.raises(SigmaFeatureNotSupportedByBackendError):
         DatadogBackend().convert(
             SigmaCollection.from_yaml(
                 """
