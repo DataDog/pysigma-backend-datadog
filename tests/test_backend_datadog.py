@@ -12,11 +12,6 @@ from sigma.backends.datadog import DatadogBackend
 ################################ Smoke Tests / Utils / Testig Helpers ##################################################
 
 
-@pytest.mark.smoke
-def test_always_passes():
-    assert True
-
-
 @pytest.fixture
 def datadog_backend():
     return DatadogBackend()
@@ -179,7 +174,7 @@ def test_datadog_filters(datadog_backend: DatadogBackend):
                         selection:
                             - Product|contains: 'examplePhrase'
                         filter:
-                            Image|endswith: '\client32.exe'
+                            Image|endswith: '\\client32.exe'
                         condition: selection and not filter
                 """
             )
@@ -460,7 +455,7 @@ def test_cloudtrail_rule_with_filters(datadog_backend: DatadogBackend):
         "type": "log_detection",
         "queries": [
             {
-                "query": "source:cloudtrail @answer:* AND @ttl:\>0 AND @ttl:\<10",
+                "query": "source:cloudtrail @answer:* AND @ttl:\\>0 AND @ttl:\\<10",
                 "groupByFields": ["@userIdentity.arn"],
                 "distinctFields": [],
             }

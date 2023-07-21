@@ -391,18 +391,6 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
-name = "sigma"
-version = "0.0.1"
-description = "Numerical methods in Python"
-category = "main"
-optional = false
-python-versions = ">=3.7"
-files = [
-    {file = "sigma-0.0.1-py3-none-any.whl", hash = "sha256:04f7a1b32d4b25d8775b1a88eb7822611c41a1067640163a1ca1f38104e1861a"},
-    {file = "sigma-0.0.1.tar.gz", hash = "sha256:ad25ad2e151e23a26354e3c458e4b1ecdd1634ca19bd7c47aece1355c5f94e36"},
-]
-
-[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -435,4 +423,4 @@ zstd = ["zstandard (>=0.18.0)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "1757f3da67030632eff20c47a22d3dceb5be8cd9e78578c439a2b69a0e3ae0d3"
+content-hash = "9342d58a34d4dd61274c462ad507295f81671b9896a0a69ebe327a23b065aedd"
