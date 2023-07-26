@@ -1,6 +1,3 @@
-## Disclaimer 
-On Thursday, July 13th, 2023, we submitted the Datadog PySigma backend to the maintainers of Sigma and the `main` branch has broken imports that will be resolved once the Datadog backend is supported. In the meantime, the `pysigma-datadog-backend-local` branch can be run locally. 
-
 ## Overview
 This repository contains the Datadog backend package (`sigma.backends.datadog`) for pySigma. This package contains the DatadogBackend class, which can be used to convert Sigma rules to Datadog rules and queries that will work with [Datadog’s Log Management](https://www.datadoghq.com/product/log-management/) and [Datadog's Cloud SIEM](https://www.datadoghq.com/product/cloud-siem/)  products.
 
@@ -41,12 +38,12 @@ In the meantime, you can use this tool locally using the following steps:
 python3 -m venv .venv
 . .venv/bin/activate
 ```
-4. Run `pip install pysigma` in the virtual environment
-5. Run `pip install sigma-cli` and follow instructions in the [sigma-cli repository](https://github.com/SigmaHQ/sigma-cli) 
+4. Run `pip install sigma-cli` and follow instructions in the [sigma-cli repository](https://github.com/SigmaHQ/sigma-cli)
+5. Install the datadog backend `sigma plugin install datadog`
 6. Using the `sigma-cli`, run the following command to convert a Sigma rule to a Datadog Cloud SIEM rule 
    `sigma convert -t datadog_backend -p datadog_pipeline ../../andrea.piazza/sigma/sigma/rules/cloud/aws -f siem_rule`
-7. Run this command to convert a Sigma rule into a Datadog Query `sigma convert -t datadog_backend -p datadog_pipeline ../../andrea.piazza/sigma/sigma/rules/cloud/aws`
-5. Use a text editor to view the **/scripts/local_pysigma_dd_conversion.py script** within the `pysigma-datadog-backend` repo. Modify the `sigma_rules_to_convert` list to indicate the rules that should be converted using the path in your file system to the Sigma Rules Repository cloned in Step 1.
+7. Run this command to convert a Sigma rule into a Datadog Query `sigma convert -t datadog_backend ../../andrea.piazza/sigma/sigma/rules/cloud/aws`
+8. Use a text editor to view the **/scripts/local_pysigma_dd_conversion.py script** within the `pysigma-datadog-backend` repo. Modify the `sigma_rules_to_convert` list to indicate the rules that should be converted using the path in your file system to the Sigma Rules Repository cloned in Step 1.
 
 As an example:
 
