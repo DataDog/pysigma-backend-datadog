@@ -27,10 +27,6 @@ Currently, the Datadog pySigma backend supports logs from the following sources 
 - [Google Cloud Audit Logs](https://cloud.google.com/logging/docs/audit)
 
 ## Installation
-As this package is in the early stages of development, it is not yet available from PyPI or integrated into the pySigma CLI. In the meantime, please use the following instructions if you would like to use the plugin locally. As the project matures, we will update this with more streamlined instructions.
-
-In the meantime, you can use this tool locally using the following steps:
-
 1. Clone `pysigma-datadog-backend` repository
 2. Clone the [Sigma Rules Repository](https://github.com/SigmaHQ/sigma) 
 3. Create and activate a Python [virtual environment](https://docs.python.org/3/library/venv.html) using the following commands:
@@ -41,8 +37,8 @@ python3 -m venv .venv
 4. Run `pip install sigma-cli` and follow instructions in the [sigma-cli repository](https://github.com/SigmaHQ/sigma-cli)
 5. Install the datadog backend `sigma plugin install datadog`
 6. Using the `sigma-cli`, run the following command to convert a Sigma rule to a Datadog Cloud SIEM rule 
-   `sigma convert -t datadog_backend -p datadog_pipeline ../../andrea.piazza/sigma/sigma/rules/cloud/aws -f siem_rule`
-7. Run this command to convert a Sigma rule into a Datadog Query `sigma convert -t datadog_backend ../../andrea.piazza/sigma/sigma/rules/cloud/aws`
+   `sigma convert -t datadog ../../andrea.piazza/sigma/sigma/rules/cloud/aws -f siem_rule`
+7. Run this command to convert a Sigma rule into a Datadog Query `sigma convert -t datadog ../../andrea.piazza/sigma/sigma/rules/cloud/aws`
 8. Use a text editor to view the **/scripts/local_pysigma_dd_conversion.py script** within the `pysigma-datadog-backend` repo. Modify the `sigma_rules_to_convert` list to indicate the rules that should be converted using the path in your file system to the Sigma Rules Repository cloned in Step 1.
 
 As an example:
