@@ -27,10 +27,6 @@ Currently, the Datadog pySigma backend supports logs from the following sources 
 - [Google Cloud Audit Logs](https://cloud.google.com/logging/docs/audit)
 
 ## Installation
-As this package is in the early stages of development, it is not yet available from PyPI or integrated into the pySigma CLI. In the meantime, please use the following instructions if you would like to use the plugin locally. As the project matures, we will update this with more streamlined instructions.
-
-In the meantime, you can use this tool locally using the following steps:
-
 1. Clone `pysigma-datadog-backend` repository
 2. Clone the [Sigma Rules Repository](https://github.com/SigmaHQ/sigma) 
 3. Create and activate a Python [virtual environment](https://docs.python.org/3/library/venv.html) using the following commands:
