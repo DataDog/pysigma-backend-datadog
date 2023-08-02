@@ -38,7 +38,7 @@ python3 -m venv .venv
 5. Install the datadog backend `sigma plugin install datadog`
 6. Using the `sigma-cli`, run the following command to convert a Sigma rule to a Datadog Cloud SIEM rule 
    `sigma convert -t datadog ../../andrea.piazza/sigma/sigma/rules/cloud/aws -f siem_rule`
-7. Run this command to convert a Sigma rule into a Datadog Query `sigma convert -t datadog ../../andrea.piazza/sigma/sigma/rules/cloud/aws`
+7. Run this command to convert a Sigma rule into a Datadog Query `sigma convert -t datadog ../../{your.user}/sigma/sigma/rules/cloud/aws`
 8. Use a text editor to view the **/scripts/local_pysigma_dd_conversion.py script** within the `pysigma-datadog-backend` repo. Modify the `sigma_rules_to_convert` list to indicate the rules that should be converted using the path in your file system to the Sigma Rules Repository cloned in Step 1.
 
 As an example:
