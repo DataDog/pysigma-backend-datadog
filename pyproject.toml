@@ -11,7 +11,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-pysigma = "^0.9.10"
+pysigma = "^0.10.3"
 
 [tool.poetry.dev-dependencies]
 
