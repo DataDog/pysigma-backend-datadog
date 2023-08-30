@@ -1,4 +1,4 @@
-from .datadog_backend import DatadogBackend
+from .datadog import DatadogBackend
 
 backends = {
     "datadog": DatadogBackend,
