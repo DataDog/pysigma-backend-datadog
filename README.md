@@ -1,7 +1,7 @@
 # pySigma Datadog Backend
 
 ![Tests](https://github.com/SigmaHQ/pySigmai-backend-datadog/actions/workflows/test.yml/badge.svg)
-![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/thomaspatzke/b4bb678c2533ee5dd3f4d06fa43198dc/raw/f3be8ff5c5795efbea967e4f6b8263bd72bca133/pySigma-backend-datadog.json)
+![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/thomaspatzke/b4bb678c2533ee5dd3f4d06fa43198dc/raw/pySigma-backend-datadog.json)
 ![Status](https://img.shields.io/badge/Status-pre--release-orange)
 
 ## Overview
