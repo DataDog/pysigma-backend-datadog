@@ -2,7 +2,8 @@
 name = "pySigma-backend-datadog"
 version = "0.1.0"
 description = "pySigma Datadog backend"
-authors = ["Thomas Patzke <thomas@patzke.org>", "Datadog Cloud SIEM <team-cloudsiembackend@datadoghq.com>"]
+readme = "README.md"
+authors = ["Datadog Cloud SIEM <team-cloudsiembackend@datadoghq.com>"]
 license = "LGPL-3.0-only"
 repository = "https://github.com/DatadogHQ/pySigma-backend-datadog"
 packages = [
