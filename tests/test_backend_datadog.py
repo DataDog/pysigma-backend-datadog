@@ -364,8 +364,8 @@ def test_cloudtrail_rule(datadog_backend: DatadogBackend):
             references:
                 - https://docs.aws.amazon.com
                 - https://github.com/sigmahq
-            date: 2023/05/27
-            modified: 2023/06/03
+            date: 2023-05-27
+            modified: 2023-06-03
             tags:
                 - attack.privilege_escalation
                 - attack.t1234.567
@@ -424,7 +424,7 @@ def test_cloudtrail_rule_with_filters(datadog_backend: DatadogBackend):
             name: Zoinks
             status: unsupported
             description: Get to the mystery machine
-            date: 2023/05/25
+            date: 2023-05-25
             author: "Scoobydoo, @loves_scooby_snacks"
             references:
                 - https://github.com/sigmahq
@@ -614,8 +614,8 @@ def test_gcp_rule(datadog_backend: DatadogBackend):
         references:
             - https://coolwebsite.com
             - https://anothercoolwebsite.com
-        date: 2023/06/11
-        modified: 2023/06/23
+        date: 2023-06-11
+        modified: 2023-06-23
         tags:
             - attack.defense_evasion
             - attack.t1234
