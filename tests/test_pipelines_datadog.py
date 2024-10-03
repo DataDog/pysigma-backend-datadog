@@ -1,10 +1,14 @@
 # pylint: disable=too-many-lines
 import pytest
 from sigma.collection import SigmaCollection
-from sigma.exceptions import SigmaTransformationError, SigmaFeatureNotSupportedByBackendError
+from sigma.exceptions import (
+    SigmaTransformationError,
+    SigmaFeatureNotSupportedByBackendError,
+)
 
 
 from sigma.backends.datadog import DatadogBackend
+
 
 def test_aws_field_transformations():
     assert (
