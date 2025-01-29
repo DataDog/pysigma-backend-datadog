@@ -78,7 +78,7 @@ class DatadogBackend(TextQueryBackend):
     wildcard_single: ClassVar[str] = "*"  # Character used as single-character wildcard
     add_escaped: ClassVar[
         str
-    ] = ' + - = && || ! ( ) { } [ ] < > ^ “ ” ~ * ? : " '  # Characters quoted in addition to wildcards and string quote
+    ] = ' + - = && || ! ( ) { } [ ] < > ^ “ ” ~ * ? : " # \\ '  # Characters quoted in addition to wildcards and string quote
     bool_values: ClassVar[
         Dict[bool, str]
     ] = {  # Values to which boolean values are mapped.
@@ -91,6 +91,8 @@ class DatadogBackend(TextQueryBackend):
     endswith_expression: ClassVar[str] = "{field}:*{value}"
     contains_expression: ClassVar[str] = "{field}:*{value}*"
     icontains_token: ClassVar[str] = "{field}:*{value}*"
+
+    re_escape_char : ClassVar[str] = "\\"   
 
     # Numeric comparison operators
     compare_op_expression: ClassVar[
