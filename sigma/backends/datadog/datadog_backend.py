@@ -114,6 +114,10 @@ class DatadogBackend(TextQueryBackend):
         True,
     )  # If regular field-escaping/quoting is applied to field1 and field2. A custom escaping/quoting can be implemented in the convert_condition_field_eq_field_escape_and_quote method.
 
+    # Null/None expressions
+    # https://datadoghq.atlassian.net/wiki/spaces/TS/pages/454787474/Log+search+syntax+101#Searching-for-logs-that-don%E2%80%99t-have-a-specific-value-(same-for-attributes)
+    field_null_expression : ClassVar[str] = "-{field}:[0* TO z*] AND {field}:*"
+
     # Field existence condition expressions.
     field_exists_expression: ClassVar[
         str
