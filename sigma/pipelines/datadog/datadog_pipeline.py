@@ -24,7 +24,7 @@ class AggregateRuleProcessingCondition(RuleProcessingCondition):
 
 
 class DatadogFieldMappingTransformation(FieldMappingTransformation):
-    def get_mapping(self, field: str):
+    def get_mapping(self, field):
         """
         If a field is not mapped using a Datadog Field Transformation for OOTB facets, included an @ sign to indicate
         the field is a facet. Users should double check that facets output by the pySigma-datadog-facets match the ones
@@ -33,7 +33,7 @@ class DatadogFieldMappingTransformation(FieldMappingTransformation):
         """
         mapping = self.mapping.get(field)
         if not mapping:
-            return f"@{field}"
+            return "*"
         else:
             return mapping
 
@@ -51,8 +51,7 @@ def datadog_pipeline() -> ProcessingPipeline:
             ProcessingItem(
                 identifier=f"dd_mapping_to_cloudtrail",
                 transformation=ChangeLogsourceTransformation(
-                    product="aws",
-                    service="cloudtrail",
+                    product="aws", service="cloudtrail"
                 ),
                 rule_conditions=[LogsourceCondition(product="aws")],
             ),
@@ -69,9 +68,7 @@ def datadog_pipeline() -> ProcessingPipeline:
                     product="azure", service="azure.*"
                 ),
                 rule_condition_linking=any,  # Override default AND  condition for rule_conditions to OR
-                rule_conditions=[
-                    LogsourceCondition(product="azure"),
-                ],
+                rule_conditions=[LogsourceCondition(product="azure")],
             ),
             ProcessingItem(
                 identifier="dd_fails_rule_conditions_not_supported",

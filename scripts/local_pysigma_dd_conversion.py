@@ -10,7 +10,7 @@ datadog_backend = DatadogBackend()
 # Add the path to the rule that should be converted to the following list:
 sigma_rules_to_convert = [
     r"/Users/{your.username}/sigma/sigma/rules/{path/to/rule/to/be/converted}",
-    r"/Users/{your.username}/sigma/sigma/rules/cloud/azure/azure_blocked_account_attempt.yml", # example rule path
+    r"/Users/{your.username}/sigma/sigma/rules/cloud/azure/azure_blocked_account_attempt.yml",  # example rule path
 ]
 
 sigma_rule_collection = SigmaCollection.load_ruleset(sigma_rules_to_convert)

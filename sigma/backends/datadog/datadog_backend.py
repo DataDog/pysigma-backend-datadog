@@ -64,7 +64,7 @@ class DatadogBackend(TextQueryBackend):
     )
 
     field_escape_pattern: ClassVar[Pattern] = re.compile(
-        "[\\s*]"
+        "[\\s]"
     )  # All matches of this pattern are prepended with the string contained in field_escape.
 
     ## Values
@@ -76,12 +76,10 @@ class DatadogBackend(TextQueryBackend):
     add_escaped: ClassVar[str] = (
         ' + - = && || ! ( ) { } [ ] < > ^ “ ” ~ * ? : " # '  # Characters quoted in addition to wildcards and string quote
     )
-    bool_values: ClassVar[Dict[bool, str]] = (
-        {  # Values to which boolean values are mapped.
-            True: "true",
-            False: "false",
-        }
-    )
+    bool_values: ClassVar[Dict[bool, str]] = {
+        True: "true",
+        False: "false",
+    }  # Values to which boolean values are mapped.
 
     # String matching operators. if none is appropriate eq_token is used.
     startswith_expression: ClassVar[str] = "{field}:{value}*"
