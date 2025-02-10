@@ -7,9 +7,8 @@ from sigma.processing.transformations import (
     ChangeLogsourceTransformation,
     FieldMappingTransformation,
     RuleFailureTransformation,
-    Transformation,
 )
-from sigma.rule import SigmaLogSource, SigmaRule
+from sigma.rule import SigmaRule
 
 
 class AggregateRuleProcessingCondition(RuleProcessingCondition):
@@ -32,26 +31,11 @@ class DatadogFieldMappingTransformation(FieldMappingTransformation):
         in their environment. Because facets are arbitrary, users should manually review each facet output from pySigma
         queries.
         """
-        # print(f"field: {field}")
         mapping = self.mapping.get(field)
         if not mapping:
             return f"@{field}"
         else:
             return mapping
-
-
-@dataclass
-class DatadogServiceMappingTransformation(Transformation):
-    """Transform all log sources as `<service>.*`"""
-
-    def apply(self, pipeline, rule: SigmaRule) -> None:
-        super().apply(pipeline, rule)
-        logsource = SigmaLogSource(
-            rule.logsource.category,
-            rule.logsource.product,
-            f"{rule.logsource.service}.*",
-        )
-        rule.logsource = logsource
 
 
 def datadog_pipeline() -> ProcessingPipeline:
@@ -63,10 +47,6 @@ def datadog_pipeline() -> ProcessingPipeline:
                 identifier=f"dd_mapping_fields",
                 transformation=DatadogFieldMappingTransformation({}),
             ),
-            # ProcessingItem(
-            #     identifier=f"dd_mapping_servics",
-            #     transformation=DatadogServiceMappingTransformation(),
-            # ),
             # Datadog Supported Logsources
             ProcessingItem(
                 identifier=f"dd_mapping_to_cloudtrail",
