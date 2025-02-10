@@ -24,7 +24,7 @@ class AggregateRuleProcessingCondition(RuleProcessingCondition):
 
 
 class DatadogFieldMappingTransformation(FieldMappingTransformation):
-    def get_mapping(self, field):
+    def get_mapping(self, field: str):
         """
         If a field is not mapped using a Datadog Field Transformation for OOTB facets, included an @ sign to indicate
         the field is a facet. Users should double check that facets output by the pySigma-datadog-facets match the ones
@@ -33,7 +33,7 @@ class DatadogFieldMappingTransformation(FieldMappingTransformation):
         """
         mapping = self.mapping.get(field)
         if not mapping:
-            return "*"
+            return f"@{field}"
         else:
             return mapping
 
