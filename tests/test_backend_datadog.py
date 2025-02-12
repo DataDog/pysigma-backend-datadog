@@ -1,10 +1,10 @@
 # pylint: disable=too-many-lines
-import pytest
 import json
 import re
-from sigma.collection import SigmaCollection
 
+import pytest
 from sigma.backends.datadog import DatadogBackend
+from sigma.collection import SigmaCollection
 
 # To convert a Datadog Rule from a Sigma rule (for testing purposes) use:
 # datadog_backend.convert(sigma_rule, output_format="siem_rule")
@@ -389,7 +389,7 @@ def test_cloudtrail_rule(datadog_backend: DatadogBackend):
         "type": "log_detection",
         "queries": [
             {
-                "query": "source:cloudtrail @userIdentity.type:Root AND (NOT @evt.type:AwsServiceEvent)",
+                "query": "source:cloudtrail @userIdentity.type:Root AND (NOT @eventType:AwsServiceEvent)",
                 "groupByFields": ["@userIdentity.arn"],
                 "distinctFields": [],
             }
