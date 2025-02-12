@@ -117,7 +117,7 @@ class DatadogBackend(TextQueryBackend):
 
     # Field existence condition expressions.
     field_exists_expression: ClassVar[str] = (
-        "({field})"  # Expression for field existence as format string with {field} placeholder for field name
+        "{field}:*"  # Expression for field existence as format string with {field} placeholder for field name
     )
     field_not_exists_expression: ClassVar[str] = (
         "NOT ({field})"  # Expression for field non-existence as format string with {field} placeholder for field name. If not set, field_exists_expression is negated with boolean NOT.
