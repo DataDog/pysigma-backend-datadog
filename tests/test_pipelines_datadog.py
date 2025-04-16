@@ -1,11 +1,12 @@
 # pylint: disable=too-many-lines
 import pytest
-from sigma.backends.datadog import DatadogBackend
 from sigma.collection import SigmaCollection
 from sigma.exceptions import (
-    SigmaFeatureNotSupportedByBackendError,
     SigmaTransformationError,
+    SigmaFeatureNotSupportedByBackendError,
 )
+
+from sigma.backends.datadog import DatadogBackend
 
 
 def test_datadog_multiple_evt_names_aws():

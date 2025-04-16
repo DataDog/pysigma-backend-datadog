@@ -1,3 +1,1 @@
-from .datadog_pipeline import datadog_pipeline
-
-pipelines = {"datadog": datadog_pipeline}
+from .datadog import datadog_pipeline
