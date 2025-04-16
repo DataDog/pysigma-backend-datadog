@@ -1,10 +1,10 @@
 # pylint: disable=too-many-lines
+import pytest
 import json
 import re
-
-import pytest
-from sigma.backends.datadog import DatadogBackend
 from sigma.collection import SigmaCollection
+
+from sigma.backends.datadog import DatadogBackend
 
 # To convert a Datadog Rule from a Sigma rule (for testing purposes) use:
 # datadog_backend.convert(sigma_rule, output_format="siem_rule")
