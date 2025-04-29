@@ -1,5 +1,9 @@
 # pySigma Datadog Backend
 
+> ⚠️ **This repository is deprecated.**
+> The official repository is now [SigmaHQ/pySigma-backend-datadog](https://github.com/SigmaHQ/pySigma-backend-datadog).
+> Please submit all issues, pull requests, and contributions there. Thank you!
+
 ![Tests](https://github.com/SigmaHQ/pySigma-backend-datadog/actions/workflows/test.yml/badge.svg)
 ![Coverage Badge](https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/thomaspatzke/b4bb678c2533ee5dd3f4d06fa43198dc/raw/pySigma-backend-datadog.json)
 ![Status](https://img.shields.io/badge/Status-pre--release-orange)
